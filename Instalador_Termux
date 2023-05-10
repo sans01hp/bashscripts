@@ -38,6 +38,7 @@ echo -e "\e[1;36m Instalando ferramentas em \e[1;32mGolang...\e[0m"
 sleep 3
 
 declare -A ferramentas=(
+   
    ["kxss"]="github.com/Emoe/kxss@latest"
 
    ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
@@ -72,7 +73,8 @@ sleep 3
 
 #Baixando Repositorios do GitHub
 declare -A repos=(
-  ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
+ 
+ ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
 
   ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
 
@@ -123,29 +125,6 @@ echo -e "\e[1;92mInstalação concluida\e[0m"
 sleep 3
 clear
 
-TDI() {
-if [ -d "ScriptTDI" ]; then
-  echo -e "\e[92mVocê já possui o repositório \e[96mScriptTDI \e[92minstalado. Divirta-se (°J°) \e[0m"
-else
-  echo -e "\e[91mVocê não possui o repositório \e[96mScriptTDI \e[91minstalado. \e[92mDeseja instalar? \e[0m(S/N)"
-  read escolha
-  case "$escolha" in
-    s|S)
-      echo -e "\e[92mBaixando ScriptTDI...\e[0m"
-      git clone https://github.com/sans01hp/ScriptTDI
-      chmod +x ScriptTDI/UrlAnaliser
-      ;;
-    n|N)
-      echo -e "\e[91mContinuando sem baixar o repositório...\e[0m"
-      ;;
-    *)
-      echo -e "\e[93mOpção invalida. Continuando sem instalar...\e[0m"
-      ;;
-  esac
-fi
-}
-
-
 cp ~/go/bin/* ~/../usr/bin
 
 echo -e "\e[93mAviso: \e[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas."
@@ -153,5 +132,4 @@ echo -e "Ao inves de digitar o caminho ~/go/bin/ferramenta você poderá agora c
 echo -e "Ex1: \e[96msubfinder -d alvo\e[0m"
 echo -e "Ex2: \e[94mffuf -u alvo -w caminho da wordlist\e[0m"
 echo -e "Ex3: \e[95mnuclei -u alvo -t ~/nuclei-templates/cves\e[0m"
-TDI
 exit 0
