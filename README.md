@@ -1,2 +1,10 @@
-# Scripts
-Scripts com objetivo de baixar, instalar e automatizar o uso de ferramentas em Python e Golang 
+# Para instalar:
+
+git clone https://github.com/sans01hp/Scripts 
+
+cd Scripts
+
+chmod +x Instalador_*
+
+./Instalador_*
+
