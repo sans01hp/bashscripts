@@ -1,0 +1,157 @@
+#!/bin/bash
+
+#Script criado por SheepN0tF0und/Sans01hp baseado no script da Lyanna na intenção de auxiliar os alunos do TDI.
+# Checa se o sistema é Linux ou não
+# Se for, o processo continua. Caso contrário, a aplicação será fechada.
+
+if [ "$(uname)" != "Linux" ]; then
+    echo -e "\e[1;32mVocê não está usando um sistema GNU/Linux ou similar\e[0m"
+    exit 1
+fi
+
+clear
+
+echo -e "\e[1;36m Vamos começar atualizando o \e[1;92mTermux...\e[0m"
+
+sleep 3
+
+cd ~
+
+apt update -y && apt full-upgrade -y
+
+clear
+
+echo -e "\e[1;36m Instalando as duas linguagens necessarias \e[1;92mPython e Golang...\e[0m"
+
+sleep 3
+
+# Instalando o Python
+apt install python -y
+
+# Instalando o Go
+apt install golang -y
+
+clear
+
+echo -e "\e[1;36m Instalando ferramentas em \e[1;32mGolang...\e[0m"
+
+sleep 3
+
+declare -A ferramentas=(
+   ["kxss"]="github.com/Emoe/kxss@latest"
+
+   ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+
+   ["httpx"]="github.com/projectdiscovery/httpx/cmd/httpx@latest"
+
+   ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
+
+   ["anew"]="github.com/tomnomnom/anew@latest"
+
+   ["ffuf"]="github.com/ffuf/ffuf@latest"
+
+   ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+)
+
+for ferramenta in "${!ferramentas[@]}"; do
+
+  echo -e "\e[92mInstalando \e[96m${ferramenta}...\e[0m"
+  sleep 3
+  go install -v "${ferramentas[$ferramenta]}"
+done
+
+~/go/bin/nuclei -update-templates
+
+sleep 3
+
+clear
+
+echo -e "\e[1;36m Baixando repositórios de ferramentas de \e[92mPYTHON \e[36me o \e[94mSecList...\e[0m"
+
+sleep 3
+
+#Baixando Repositorios do GitHub
+declare -A repos=(
+  ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
+
+  ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
+
+  ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
+
+  ["sherlock"]="https://github.com/sherlock-project/sherlock"
+
+  ["git-dumper"]="https://github.com/arthaud/git-dumper"
+
+  ["zphisher"]="https://github.com/htr-tech/zphisher"
+
+  ["SecLists"]="https://github.com/danielmiessler/SecLists"
+)
+
+for repo in "${!repos[@]}"
+do
+  if [ -d "$repo" ]; then
+    echo -e "\e[92mO diretório \e[96m$repo \e[92mjá existe"
+    echo -e "\e[93mDeseja atualizá-lo? \e[0m(S/N)"
+    read choice
+    case "$choice" in
+      s|S)
+        echo -e "\e[92mBaixando a versão mais recente de \e[96m${repo}...\e[0m"
+        cd "$repo"
+        git reset --hard
+        git pull
+        cd ..
+        ;;
+      n|N)
+        echo -e "\e[91mContinuando sem atualizar \e[96m${repo}...\e[0m"
+        ;;
+      *)
+        echo -e "\e[93mOpção inválida. Continuando sem atualizar \e[96m${repo}...\e[0m"
+        ;;
+    esac
+  else
+      echo "Clonando ${repo}..."
+      git clone "${repos[$repo]}"
+      cd "$repo"
+      pip install -r requirements.txt
+      cd ~
+  fi
+done
+
+clear
+
+echo -e "\e[1;92mInstalação concluida\e[0m"
+sleep 3
+clear
+
+TDI() {
+if [ -d "ScriptTDI" ]; then
+  echo -e "\e[92mVocê já possui o repositório \e[96mScriptTDI \e[92minstalado. Divirta-se (°J°) \e[0m"
+else
+  echo -e "\e[91mVocê não possui o repositório \e[96mScriptTDI \e[91minstalado. \e[92mDeseja instalar? \e[0m(S/N)"
+  read escolha
+  case "$escolha" in
+    s|S)
+      echo -e "\e[92mBaixando ScriptTDI...\e[0m"
+      git clone https://github.com/sans01hp/ScriptTDI
+      chmod +x ScriptTDI/UrlAnaliser
+      ;;
+    n|N)
+      echo -e "\e[91mContinuando sem baixar o repositório...\e[0m"
+      ;;
+    *)
+      echo -e "\e[93mOpção invalida. Continuando sem instalar...\e[0m"
+      ;;
+  esac
+fi
+}
+
+
+cp ~/go/bin/* ~/../usr/bin
+
+echo -e "\e[93mAviso: \e[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas."
+echo -e "Ao inves de digitar o caminho ~/go/bin/ferramenta você poderá agora chamar a ferramenta apenas digitando o seu nome\e[0m"
+echo -e "Ex1: \e[96msubfinder -d alvo\e[0m"
+echo -e "Ex2: \e[94mffuf -u alvo -w caminho da wordlist\e[0m"
+echo -e "Ex3: \e[95mnuclei -u alvo -t ~/nuclei-templates/cves\e[0m"
+TDI
+exit 0
