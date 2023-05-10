@@ -1,0 +1,125 @@
+#!/bin/bash
+
+
+
+echo -e "\e[93mDigite o \e[96mDominio/Url \e[93mque deseja analisar:\e[0m"
+read url
+
+# Verifica se a URL começa com "https://"
+  if [[ -z "${url##https://*}" ]]; then
+    # Se a URL já começa com "https://", não faz nada
+    url="${url}"
+  else
+    # Se a URL não começa com "https://", adiciona "https://" no início
+    url="https://${url}"
+  fi
+
+menu() {
+    echo -e "1-\e[92mUsar o ParamSpider\e[0m"
+    echo -e "2-\e[94mAchar Subdominios ativos\e[0m"
+    echo -e "3-\e[95mUsar Nuclei\e[0m"
+    echo -e "4-\e[96mBrute force de diretórios com ffuf\e[0m"
+    echo -e "5-\e[93mSair\e[0m"
+}
+
+subdominios() {
+    echo -e "Verificando subdominios ativos em \e[92m$url\e[0m"
+    ~/go/bin/subfinder -d ${url##https://} | ~/go/bin/httpx  -ip -td -sc -title
+}
+
+parametro() {
+    echo -e "executando paramspider em \e[92m$url\e[0m"
+    python3 ~/ParamSpider/paramspider.py -d  $url
+}
+
+nuclei() {
+    echo -e "\e[93m Quais templates quer usar?\e[92m"
+    echo -e "1-todos"
+    echo -e "2-exposures"
+    echo -e "3-cves"
+    echo -e "4-exposed panels"
+    echo -e "5-fuzzing"
+    echo -e "6-vulnerabilities\e[0m"
+
+    read template
+
+    case $template in
+
+        1)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates
+            ;;
+        2)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates/exposures
+            ;;
+        3)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates/cves
+            ;;
+        4)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates/exposed-panels
+            ;;
+        5)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates/fuzzing
+            ;;
+        6)
+            ~/go/bin/nuclei -u $url -t ~/nuclei-templates/vulnerabilities
+            ;;
+
+        *)
+            echo -e "\e[93mOpção invalida \e[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\e[0m"
+            return
+            ;;
+    esac
+}
+
+ffuf() {
+    echo -e "\e[92mQual \e[96mWordList \e[92mdeseja usar?\e[0m"
+    echo -e "\e[94mWordList padrão do script\e[0m [1]"
+    echo -e "\e[93mWordList personalizada\e[0m [2]"
+
+    read wlchoice
+
+    case $wlchoice in
+
+        1)
+           ~/go/bin/ffuf -u "${url}/FUZZ" -w SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -mc 200
+          ;;
+        2)
+          echo -e "\e[92mDigite o caminho da \e[96mWordlist \e[92mque deseja usar:\e[0m"
+          read wordlist
+          ~/go/bin/ffuf -u "${url}/FUZZ" -w "${wordlist}" -mc 200
+          ;;
+        *)
+          echo -e "\e[93mOpção invalida \e[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\e[0m"
+          return
+          ;;
+     esac
+}
+
+while true; do
+
+    menu
+
+    read opcao
+
+    case $opcao in
+            1)
+                parametro
+                ;;
+            2)
+                subdominios
+                ;;
+            3)
+                nuclei
+                ;;
+            4)
+                ffuf
+                ;;
+            5)
+                echo -e "\e[93mSaindo...\e[0m"
+                exit 0
+                ;;
+            *)
+                echo -e "\e[93mOpção invalida \e[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\e[0m"
+                ;;
+    esac
+done
