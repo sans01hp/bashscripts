@@ -87,6 +87,8 @@ declare -A repos=(
   ["zphisher"]="https://github.com/htr-tech/zphisher"
 
   ["SecLists"]="https://github.com/danielmiessler/SecLists"
+  
+  ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
 )
 
 for repo in "${!repos[@]}"
