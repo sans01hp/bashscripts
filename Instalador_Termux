@@ -74,7 +74,7 @@ sleep 3
 #Baixando Repositorios do GitHub
 declare -A repos=(
  
- ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
+  ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
 
   ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
 
@@ -87,6 +87,8 @@ declare -A repos=(
   ["zphisher"]="https://github.com/htr-tech/zphisher"
 
   ["SecLists"]="https://github.com/danielmiessler/SecLists"
+  
+  ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
 )
 
 for repo in "${!repos[@]}"
