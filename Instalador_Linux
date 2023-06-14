@@ -11,7 +11,7 @@ fi
 
 clear
 
-echo -e "\e[1;36m Vamos começar atualizando o \e[1;92mTermux...\e[0m"
+echo -e "\e[1;36m Vamos começar atualizando o \e[1;92mLinux...\e[0m"
 
 sleep 3
 
