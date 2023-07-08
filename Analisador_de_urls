@@ -1,19 +1,15 @@
 #!/bin/bash
 
-
-
 echo -e "\e[93mDigite o \e[96mDominio/Url \e[93mque deseja analisar:\e[0m"
 read url
 
 # Verifica se a URL começa com "https://"
-  if [[ -z "${url##https://*}" ]]; then
-    # Se a URL já começa com "https://", não faz nada
-    url="${url}"
-  else
-    # Se a URL não começa com "https://", adiciona "https://" no início
-    url="https://${url}"
-  fi
+if [[ "${url}" != "https://"* ]]; then
+# Se a URL não começa com "https://", adiciona "https://" no início
+  url="https://${url}"
+fi
 
+#Funções do código
 menu() {
     echo -e "1-\e[92mUsar o ParamSpider\e[0m"
     echo -e "2-\e[94mAchar Subdominios ativos\e[0m"
@@ -24,7 +20,7 @@ menu() {
 
 subdominios() {
     echo -e "Verificando subdominios ativos em \e[92m$url\e[0m"
-    ~/go/bin/subfinder -d ${url##https://} | ~/go/bin/httpx  -ip -td -sc -title
+    ~/go/bin/subfinder -d "$url" -silent | ~/go/bin/httpx  -ip -td -sc -title
 }
 
 parametro() {
@@ -95,6 +91,7 @@ ffuf() {
      esac
 }
 
+#Loop do código 
 while true; do
 
     menu
