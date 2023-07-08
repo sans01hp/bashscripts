@@ -12,15 +12,9 @@ fi
 #Funções do código
 menu() {
     echo -e "1-\e[92mUsar o ParamSpider\e[0m"
-    echo -e "2-\e[94mAchar Subdominios ativos\e[0m"
-    echo -e "3-\e[95mUsar Nuclei\e[0m"
-    echo -e "4-\e[96mBrute force de diretórios com ffuf\e[0m"
-    echo -e "5-\e[93mSair\e[0m"
-}
-
-subdominios() {
-    echo -e "Verificando subdominios ativos em \e[92m$url\e[0m"
-    ~/go/bin/subfinder -d "$url" -silent | ~/go/bin/httpx  -ip -td -sc -title
+    echo -e "2-\e[95mUsar Nuclei\e[0m"
+    echo -e "3-\e[96mBrute force de diretórios com ffuf\e[0m"
+    echo -e "9-\e[93mSair\e[0m"
 }
 
 parametro() {
@@ -103,15 +97,12 @@ while true; do
                 parametro
                 ;;
             2)
-                subdominios
-                ;;
-            3)
                 nuclei
                 ;;
-            4)
+            3)
                 ffuf
                 ;;
-            5)
+            9)
                 echo -e "\e[93mSaindo...\e[0m"
                 exit 0
                 ;;
