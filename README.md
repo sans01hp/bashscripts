@@ -1,6 +1,6 @@
 # Para instalar:
 
-git clone https://github.com/sans01hp/Scripts 
+git clone https://github.com/Sans01hp/Scripts 
 
 cd Scripts
 
