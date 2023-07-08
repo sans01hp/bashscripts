@@ -8,6 +8,7 @@ if [[ "${url}" != "https://"* ]]; then
 # Se a URL não começa com "https://", adiciona "https://" no início
   url="https://${url}"
 fi
+echo -e "\e[93mAtualmente analisando o link: \e[96m${url}\e[0m"
 
 #Funções do código
 menu() {
