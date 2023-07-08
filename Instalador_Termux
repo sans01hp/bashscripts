@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#Script criado por SheepN0tF0und/Sans01hp baseado no script da Lyanna na intenção de auxiliar os alunos do TDI.
 # Checa se o sistema é Linux ou não
 # Se for, o processo continua. Caso contrário, a aplicação será fechada.
 
