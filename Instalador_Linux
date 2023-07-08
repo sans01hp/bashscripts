@@ -126,7 +126,7 @@ echo -e "\e[1;92mInstalação concluida\e[0m"
 sleep 3
 clear
 
-cp ~/go/bin/* ~/../../usr/bin
+sudo cp ~/go/bin/* ~/../../usr/bin
 
 echo -e "\e[93mAviso: \e[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas."
 echo -e "Ao inves de digitar o caminho ~/go/bin/ferramenta você poderá agora chamar a ferramenta apenas digitando o seu nome\e[0m"
