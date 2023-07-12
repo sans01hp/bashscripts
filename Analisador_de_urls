@@ -15,6 +15,7 @@ menu() {
     echo -e "1-\e[92mUsar o ParamSpider\e[0m"
     echo -e "2-\e[95mUsar Nuclei\e[0m"
     echo -e "3-\e[96mBrute force de diretórios com ffuf\e[0m"
+    echo -e "4-\e[94mSubdominios ativos\e[0m"
     echo -e "9-\e[93mSair\e[0m"
 }
 
@@ -86,6 +87,11 @@ ffuf() {
      esac
 }
 
+#Devido a problemas ao iniciar as ferramentas pelo path ~/go/bin as ferramentas em golang são copiadas para /etc/bin ao usar os scripts de instalação. 
+subd() {
+    subfinder -d "${url##https://}" | httpx -sc -title
+}
+
 #Loop do código 
 while true; do
 
@@ -103,6 +109,9 @@ while true; do
             3)
                 ffuf
                 ;;
+            4)
+                subd
+                ;; 
             9)
                 echo -e "\e[93mSaindo...\e[0m"
                 exit 0
