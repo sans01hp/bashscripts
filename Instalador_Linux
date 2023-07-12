@@ -102,7 +102,8 @@ do
         cd "$repo"
         git reset --hard
         git pull
-        cd ..
+        pip install -r requirements.txt
+        cd ~
         ;;
       n|N)
         echo -e "\e[91mContinuando sem atualizar \e[96m${repo}...\e[0m"
