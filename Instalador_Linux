@@ -73,7 +73,7 @@ sleep 3
 #Baixando Repositorios do GitHub
 declare -A repos=(
  
- ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
+  ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
 
   ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
 
@@ -93,25 +93,13 @@ declare -A repos=(
 for repo in "${!repos[@]}"
 do
   if [ -d "$repo" ]; then
-    echo -e "\e[92mO diretório \e[96m$repo \e[92mjá existe"
-    echo -e "\e[93mDeseja atualizá-lo? \e[0m(S/N)"
-    read choice
-    case "$choice" in
-      s|S)
-        echo -e "\e[92mBaixando a versão mais recente de \e[96m${repo}...\e[0m"
-        cd "$repo"
-        git reset --hard
-        git pull
-        pip install -r requirements.txt
-        cd ~
-        ;;
-      n|N)
-        echo -e "\e[91mContinuando sem atualizar \e[96m${repo}...\e[0m"
-        ;;
-      *)
-        echo -e "\e[93mOpção inválida. Continuando sem atualizar \e[96m${repo}...\e[0m"
-        ;;
-    esac
+
+      echo -e "\e[92mBaixando a versão mais recente de \e[96m${repo}...\e[0m"
+      cd "$repo"
+      git reset --hard
+      git pull
+      pip install -r requirements.txt
+      cd ~
   else
       echo "Clonando ${repo}..."
       git clone "${repos[$repo]}"
