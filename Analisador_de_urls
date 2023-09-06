@@ -21,7 +21,7 @@ menu() {
 
 parametro() {
     echo -e "executando paramspider em \e[92m$url\e[0m"
-    python3 ~/ParamSpider/paramspider.py -d  $url
+    python3 ~/ParamSpider/paramspider.py -d  "$url"
 }
 
 nuclei() {
@@ -34,7 +34,7 @@ nuclei() {
     echo -e "6-vulnerabilities\e[0m"
 
     read template
-
+# Path dos templates(altere se precisar)
     case $template in
 
         1)
@@ -70,7 +70,7 @@ ffuf() {
 
     read wlchoice
 
-    case $wlchoice in
+    case "$wlchoice" in
 
         1)
            ~/go/bin/ffuf -u "${url}/FUZZ" -w SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -mc 200
