@@ -7,17 +7,20 @@ if [ "$(uname)" != "Linux" ]; then
     echo -e "\e[1;32mVocê não está usando um sistema GNU/Linux ou similar\e[0m"
     exit 1
 fi
+
 clear
 
 echo -e "\e[1;36m Vamos começar atualizando o \e[1;92mTermux...\e[0m"
 sleep 3
 
 cd ~
+
 apt update -y && apt full-upgrade -y
 
 clear
 
 echo -e "\e[1;36m Instalando as duas linguagens necessarias \e[1;92mPython e Golang...\e[0m"
+
 sleep 3
 
 # Instalando o Python
@@ -25,8 +28,10 @@ apt install python -y
 
 # Instalando o Go
 apt install golang -y
+
 # Instalando o curl e o wget
 apt install curl wget  -y
+
 clear
 
 echo -e "\e[1;36m Instalando ferramentas em \e[1;32mGolang...\e[0m"
@@ -113,7 +118,6 @@ do
       cd ..
   fi
 done
-
 
 clear
 
