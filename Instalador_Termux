@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Checa se o sistema é Linux ou não                                                                 
+# Checa se o sistema é Linux ou não
 # Se for, o processo continua. Caso contrário, a aplicação será fechada.
 
-if [ "$(uname)" != "Linux" ]; then                                                                     
+if [ "$(uname)" != "Linux" ]; then
     echo -e "\e[1;32mVocê não está usando um sistema GNU/Linux ou similar\e[0m"
     exit 1
 fi
@@ -55,10 +55,11 @@ declare -A ferramentas=(
    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
 )
 
-for ferramenta in "${!ferramentas[@]}"; do
+for ferramenta in "${!ferramentas[@]}"
+do
 
   echo -e "\e[92mInstalando \e[96m${ferramenta}...\e[0m"
-  sleep 3
+  sleep 1
   go install -v "${ferramentas[$ferramenta]}"
 done
 
@@ -95,29 +96,41 @@ declare -A repos=(
 for repo in "${!repos[@]}"
 do
   if [ -d "$repo" ]; then
-
-      echo -e "\e[92mBaixando a versão mais recente de \e[96m${repo}...\e[0m"
-      cd "$repo"
-      git reset --hard
-      git pull
-      if [ -f "requirements.txt" ]; then
-        pip install -r requirements.txt
+    # Diretório já existe, então atualize-o
+    echo -e "\e[92mAtualizando o repositório \e[96m${repo}...\e[0m"
+    cd "$repo"
+    git reset --hard
+    git pull
+    if [ -f "requirements.txt" ]; then
+      pip install -r requirements.txt
+      if [ "$repo" == "ParamSpider" ]; then
+        pip install -r .
       else
         echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
       fi
-      cd ..
+    else
+      echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
+    fi
+    cd ..
   else
-      echo "Clonando ${repo}..."
-      git clone "${repos[$repo]}"
-      cd "$repo"
-      if [ -f "requirements.txt" ]; then
-        pip install -r requirements.txt
+    # Diretório não existe, então clone-o
+    echo "Clonando ${repo}..."
+    git clone "${repos[$repo]}"
+    cd "$repo"
+    if [ -f "requirements.txt" ]; then
+      pip install -r requirements.txt
+      if [ "$repo" == "ParamSpider" ]; then
+        pip install -r .
       else
         echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
       fi
-      cd ..
+    else
+      echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
+    fi
+    cd ..
   fi
 done
+
 
 clear
 
