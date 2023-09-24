@@ -19,18 +19,12 @@ apt update -y && apt full-upgrade -y
 
 clear
 
-echo -e "\e[1;36m Instalando as duas linguagens necessarias \e[1;92mPython e Golang...\e[0m"
+echo -e "\e[1;36m Instalando Wget, Curl e as duas linguagens necessarias \e[1;92mPython e Golang...\e[0m"
 
 sleep 3
 
 # Instalando o Python
-apt install python -y
-
-# Instalando o Go
-apt install golang -y
-
-# Instalando o curl e o wget
-apt install curl wget  -y
+apt install python golang wget curl -y
 
 clear
 
