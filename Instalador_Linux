@@ -25,7 +25,10 @@ echo -e "\e[1;36m Instalando Wget, Curl e as duas linguagens necessarias \e[1;92
 sleep 3
 
 # Instalando Pacotes necessarios
-sudo apt install python golang curl wget -y
+sudo apt install python -y
+sudo apt install golang -y
+sudo apt install curl -y
+sudo apt install wget -y
 
 clear
 
