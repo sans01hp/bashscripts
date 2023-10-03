@@ -49,9 +49,7 @@ declare -A ferramentas=(
    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
 )
 
-for ferramenta in "${!ferramentas[@]}"
-do
-
+for ferramenta in "${!ferramentas[@]}"; do
   echo -e "\e[92mInstalando \e[96m${ferramenta}...\e[0m"
   sleep 1
   go install -v "${ferramentas[$ferramenta]}"
@@ -59,7 +57,7 @@ done
 
 ~/go/bin/nuclei -update-templates
 
-sleep 3
+sleep 2
 
 clear
 
@@ -87,8 +85,7 @@ declare -A repos=(
   ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
 )
 
-for repo in "${!repos[@]}"
-do
+for repo in "${!repos[@]}"; do
   if [ -d "$repo" ]; then
     # Diretório já existe, então atualize-o
     echo -e "\e[92mAtualizando o repositório \e[96m${repo}...\e[0m"
@@ -97,27 +94,21 @@ do
     git pull
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-      if [ "$repo" == "ParamSpider" ]; then
-        pip install -r .
-      else
-        echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
-      fi
+    elif [ "$repo" == "ParamSpider" ]; then
+      pip install -r .
     else
       echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
     fi
     cd ..
   else
     # Diretório não existe, então clone-o
-    echo "Clonando ${repo}..."
+    echo -e "\e[95mClonando ${repo}...\e[0m"
     git clone "${repos[$repo]}"
     cd "$repo"
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-      if [ "$repo" == "ParamSpider" ]; then
+    elif [ "$repo" == "ParamSpider" ]; then
         pip install -r .
-      else
-        echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
-      fi
     else
       echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
     fi
@@ -125,12 +116,9 @@ do
   fi
 done
 
-
 clear
 
 echo -e "\e[1;92mInstalação concluida\e[0m"
-sleep 3
-clear
 
 cp ~/go/bin/* ~/../usr/bin
 
