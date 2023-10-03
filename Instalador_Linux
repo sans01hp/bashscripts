@@ -90,8 +90,7 @@ declare -A repos=(
   ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
 )
 
-for repo in "${!repos[@]}"
-do
+for repo in "${!repos[@]}"; do
   if [ -d "$repo" ]; then
     # Diretório já existe, então atualize-o
     echo -e "\e[92mAtualizando o repositório \e[96m${repo}...\e[0m"
@@ -100,11 +99,8 @@ do
     git pull
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-      if [ "$repo" == "ParamSpider" ]; then
-        pip install -r .
-      else
-        echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
-      fi
+    elif [ "$repo" == "ParamSpider" ]; then
+      pip install -r .
     else
       echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
     fi
@@ -116,24 +112,16 @@ do
     cd "$repo"
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-      if [ "$repo" == "ParamSpider" ]; then
-        pip install -r .
-      else
-        echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
-      fi
+    elif [ "$repo" == "ParamSpider" ]; then
+      pip install -r .
     else
       echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
     fi
     cd ..
   fi
 done
-
-
 clear
-
 echo -e "\e[1;92mInstalação concluida\e[0m"
-sleep 3
-clear
 
 sudo cp ~/go/bin/* ~/../../usr/bin
 
