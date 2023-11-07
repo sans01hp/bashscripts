@@ -4,13 +4,13 @@
 # Se for, o processo continua. Caso contrário, a aplicação será fechada.
 
 if [ "$(uname)" != "Linux" ]; then
-    echo -e "\e[1;32mVocê não está usando um sistema GNU/Linux ou similar\e[0m"
+    echo -e "\033[1;32mVocê não está usando um sistema GNU/Linux ou similar\033[0m"
     exit 1
 fi
 
 clear
 
-echo -e "\e[1;36m Vamos começar atualizando o \e[1;92mLinux...\e[0m"
+echo -e "\033[1;36m Vamos começar atualizando o \033[1;92mLinux...\033[0m"
 
 sleep 3
 
@@ -20,19 +20,22 @@ sudo apt update -y && apt full-upgrade -y
 
 clear
 
-echo -e "\e[1;36m Instalando Wget, Curl e as duas linguagens necessarias \e[1;92mPython e Golang...\e[0m"
+echo -e "\033[1;36m Instalando as duas linguagens necessarias \033[1;92mPython e Golang...\033[0m"
 
 sleep 3
 
-# Instalando Pacotes necessarios
+# Instalando o Python
 sudo apt install python -y
-sudo apt install golang -y
-sudo apt install curl -y
-sudo apt install wget -y
+
+# Instalando o Go
+ sudo apt install golang -y
+
+# Instalando o curl e o wget
+sudo apt install curl wget  -y
 
 clear
 
-echo -e "\e[1;36m Instalando ferramentas em \e[1;32mGolang...\e[0m"
+echo -e "\033[1;36m Instalando ferramentas em \033[1;32mGolang...\033[0m"
 
 sleep 3
 
@@ -55,7 +58,7 @@ declare -A ferramentas=(
 
 for ferramenta in "${!ferramentas[@]}"; do
 
-  echo -e "\e[92mInstalando \e[96m${ferramenta}...\e[0m"
+  echo -e "\033[92mInstalando \033[96m${ferramenta}...\033[0m"
   sleep 3
   go install -v "${ferramentas[$ferramenta]}"
 done
@@ -66,7 +69,7 @@ sleep 3
 
 clear
 
-echo -e "\e[1;36m Baixando repositórios de ferramentas de \e[92mPYTHON \e[36me o \e[94mSecList...\e[0m"
+echo -e "\033[1;36m Baixando repositórios de ferramentas de \033[92mPYTHON \033[36me o \033[94mSecList...\033[0m"
 
 sleep 3
 
@@ -90,19 +93,23 @@ declare -A repos=(
   ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
 )
 
-for repo in "${!repos[@]}"; do
+for repo in "${!repos[@]}"
+do
   if [ -d "$repo" ]; then
     # Diretório já existe, então atualize-o
-    echo -e "\e[92mAtualizando o repositório \e[96m${repo}...\e[0m"
+    echo -e "\033[92mAtualizando o repositório \033[96m${repo}...\033[0m"
     cd "$repo"
     git reset --hard
     git pull
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-    elif [ "$repo" == "ParamSpider" ]; then
-      pip install -r .
+      if [ "$repo" == "ParamSpider" ]; then
+        pip install -r .
+      else
+        echo -e "\033[91mO arquivo requirements.txt não existe neste repositório\033[0m"
+      fi
     else
-      echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
+      echo -e "\033[91mO arquivo requirements.txt não existe neste repositório\033[0m"
     fi
     cd ..
   else
@@ -112,22 +119,30 @@ for repo in "${!repos[@]}"; do
     cd "$repo"
     if [ -f "requirements.txt" ]; then
       pip install -r requirements.txt
-    elif [ "$repo" == "ParamSpider" ]; then
-      pip install -r .
+      if [ "$repo" == "ParamSpider" ]; then
+        pip install -r .
+      else
+        echo -e "\033[91mO arquivo requirements.txt não existe neste repositório\033[0m"
+      fi
     else
-      echo -e "\e[91mO arquivo requirements.txt não existe neste repositório\e[0m"
+      echo -e "\033[91mO arquivo requirements.txt não existe neste repositório\033[0m"
     fi
     cd ..
   fi
 done
+
+
 clear
-echo -e "\e[1;92mInstalação concluida\e[0m"
+
+echo -e "\033[1;92mInstalação concluida\033[0m"
+sleep 3
+clear
 
 sudo cp ~/go/bin/* ~/../../usr/bin
 
-echo -e "\e[93mAviso: \e[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas."
-echo -e "Ao inves de digitar o caminho ~/go/bin/ferramenta você poderá agora chamar a ferramenta apenas digitando o seu nome\e[0m"
-echo -e "Ex1: \e[96msubfinder -d alvo\e[0m"
-echo -e "Ex2: \e[94mffuf -u alvo/FUZZ(palavra padrão para ser substituida pelas da wordlist) -w caminho da wordlist\e[0m"
-echo -e "Ex3: \e[95mnuclei -u alvo -t ~/nuclei-templates/cves\e[0m"
+echo -e "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas."
+echo -e "Ao inves de digitar o caminho ~/go/bin/ferramenta você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m"
+echo -e "Ex1: \033[96msubfinder -d alvo\033[0m"
+echo -e "Ex2: \033[94mffuf -u alvo/FUZZ(palavra padrão para ser substituida pelas da wordlist) -w caminho da wordlist\033[0m"
+echo -e "Ex3: \033[95mnuclei -u alvo -t ~/nuclei-templates/cves\033[0m"
 exit 0
