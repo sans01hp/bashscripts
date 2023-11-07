@@ -1,4 +1,4 @@
-    #!/bin/bash
+#!/bin/bash
 
 # Checa se o sistema é Linux ou não
 # Se for, o processo continua. Caso contrário, a aplicação será fechada.
