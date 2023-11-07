@@ -1,7 +1,6 @@
-
 #!/bin/bash
 
-echo -e "\e[93mDigite o \e[96mDominio/Url \e[93mque deseja analisar:\e[0m"
+echo -e "\033[93mDigite o \033[96mDominio/Url \033[93mque deseja analisar:\033[0m"
 read url
 
 # Verifica se a URL começa com "https://"
@@ -9,29 +8,29 @@ if [[ "${url}" != "https://"* ]]; then
 # Se a URL não começa com "https://", adiciona "https://" no início
   url="https://${url}"
 fi
-echo -e "\e[93mAtualmente analisando o link: \e[96m${url}\e[0m"
+echo -e "\033[93mAtualmente analisando o link: \033[96m${url}\033[0m"
 
 #Funções do código
 menu(){
-    echo -e "1-\e[92mUsar o ParamSpider\e[0m"
-    echo -e "2-\e[95mUsar Nuclei\e[0m"
-    echo -e "3-\e[94mSubdominios ativos\e[0m"
-    echo -e "9-\e[93mSair\e[0m"
+    echo -e "1-\033[92mUsar o ParamSpider\033[0m"
+    echo -e "2-\033[95mUsar Nuclei\033[0m"
+    echo -e "3-\033[94mSubdominios ativos\033[0m"
+    echo -e "9-\033[93mSair\033[0m"
 }
 
 parametro(){
-    echo -e "executando paramspider em \e[92m$url\e[0m"
+    echo -e "executando paramspider em \033[92m$url\033[0m"
     paramspider  -d  "$url"
 }
 
 nuclei(){
-    echo -e "\e[93m Quais templates quer usar?\e[92m"
+    echo -e "\033[93m Quais templates quer usar?\033[92m"
     echo -e "1-todos"
     echo -e "2-exposures"
     echo -e "3-cves"
     echo -e "4-exposed panels"
     echo -e "5-fuzzing"
-    echo -e "6-vulnerabilities\e[0m"
+    echo -e "6-vulnerabilities\033[0m"
 
     read template
 # Path dos templates(altere se precisar)
@@ -57,7 +56,7 @@ nuclei(){
             ;;
 
         *)
-            echo -e "\e[93mOpção invalida \e[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\e[0m"
+            echo -e "\033[93mOpção invalida \033[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\033[0m"
             return
             ;;
     esac
@@ -86,11 +85,11 @@ while true; do
                 subd
                 ;;
             9)
-                echo -e "\e[93mSaindo...\e[0m"
+                echo -e "\033[93mSaindo...\033[0m"
                 exit 0
                 ;;
             *)
-                echo -e "\e[93mOpção invalida \e[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\e[0m"
+                echo -e "\033[93mOpção invalida \033[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\033[0m"
                 ;;
     esac
 done
