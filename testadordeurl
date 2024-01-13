@@ -1,0 +1,93 @@
+#!/bin/bash
+
+printf "\033[93mDigite o \033[96mDominio/Url \033[93mque deseja analisar:\033[0m\n"
+read url
+
+# Verifica se a URL começa com "https://"
+if [[ "${url}" != "https://"* ]]; then
+  # Se a URL não começa com "https://", adiciona "https://" no início
+  url="https://${url}"
+fi
+
+printf "\033[93mAtualmente analisando o link: \033[96m%s\033[0m\n" "$url"
+
+#Funções do código
+menu(){
+    printf "1-\033[92mMontar urls\033[0m\n"
+    printf "2-\033[95mUsar Nuclei\033[0m\n"
+    printf "3-\033[94mSubdominios ativos\033[0m\n"
+    printf "9-\033[93mSair\033[0m\n"
+}
+
+acharurls(){
+    printf "montando urls em \033[92m%s\033[0m\n" "$url"
+    printf "$url" | gau
+}
+
+nuclei(){
+    printf "\033[93m Quais templates quer usar?\033[92m\n"
+    printf "1-todos\n"
+    printf "2-exposures\n"
+    printf "3-cves\n"
+    printf "4-exposed panels\n"
+    printf "5-fuzzing\n"
+    printf "6-vulnerabilities\033[0m\n"
+
+    read -r template
+    # Path dos templates (altere se precisar)
+    case $template in
+        1)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates
+            ;;
+        2)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/exposures
+            ;;
+        3)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/cves
+            ;;
+        4)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/exposed-panels
+            ;;
+        5)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/fuzzing
+            ;;
+        6)
+            ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/vulnerabilities
+            ;;
+        *)
+            printf "\033[93mOpção invalida \033[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\033[0m\n"
+            return
+            ;;
+    esac
+}
+
+# Devido a problemas ao iniciar as ferramentas pelo path ~/go/bin as ferramentas em golang são copiadas para /etc/bin ao usar os scripts de instalação.
+subd(){
+    subfinder -d "${url##https://}" | httpx -sc -title
+}
+
+# Loop do código
+while true; do
+    menu
+
+    read -r opcao
+
+    case $opcao in
+        1)
+            acharurls
+            ;;
+        2)
+            nuclei
+            ;;
+        3)
+            subd
+            ;;
+        9)
+            printf "\033[93mSaindo...\033[0m\n"
+            exit 0
+            ;;
+        *)
+            printf "\033[93mOpção invalida \033[96m(⁠╯⁠°⁠□⁠°⁠）⁠╯⁠︵⁠ ⁠┻⁠━⁠┻\033[0m\n"
+            ;;
+    esac
+done
