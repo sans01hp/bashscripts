@@ -1,10 +1,12 @@
 # Para instalar:
 
-git clone https://github.com/Sans01hp/Scripts 
+git clone https://github.com/sans01hp/bashscripts 
 
-cd Scripts
+cd bashscripts 
 
-chmod +x Instalador_*
+chmod +x instaladorlinux instaladortermux
 
-./Instalador_*
+./instalador(linux/termux)
+
+use o instaladorlinux caso você precise de permissão do usuário root.
 
