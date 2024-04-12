@@ -89,7 +89,7 @@ for repo in "${!links[@]}"; do
         if [ "$repo" == "Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
             if [ -f "${repo}/install.aex" ]; then
-                chmod +x "${repo}/install.aex
+                chmod +x "${repo}/install.aex"
                 ./{repo}/install.aex
             fi
         fi
