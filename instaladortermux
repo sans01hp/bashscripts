@@ -37,7 +37,6 @@ declare -A ferramentas=(
     ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
     ["anew"]="github.com/tomnomnom/anew@latest"
     ["ffuf"]="github.com/ffuf/ffuf@latest"
-    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
     ["getJS"]="github.com/003random/getJS@latest"
 )
 
@@ -46,10 +45,6 @@ for ferramenta in "${!ferramentas[@]}"; do
     sleep 1
     go install -v "${ferramentas[$ferramenta]}"
 done
-
-~/go/bin/nuclei -update-templates
-
-sleep 3
 
 clear
 
