@@ -14,9 +14,10 @@ printf "\033[93mAtualmente analisando o link: \033[96m%s\033[0m\n" "$url"
 #Funções do código
 menu(){
     printf "1-\033[92mMontar urls\033[0m\n"
-    printf "2-\033[95mUsar Nuclei\033[0m\n"
+    printf "2-\033[95mUsar Nuclei \033[91m[ROOT NECESSÁRIO]\033[0m\n"
     printf "3-\033[94mSubdominios ativos\033[0m\n"
-    printf "9-\033[93mSair\033[0m\n"
+    printf "4-\033[96mAchar informações no JavaScript\033[0m\n"
+    printf "00-\033[93mSair\033[0m\n"
 }
 
 acharurls(){
@@ -24,6 +25,10 @@ acharurls(){
     printf "$url" | gau
 }
 
+javascript(){
+    printf "coletando informações no JavaScript"\n
+    printf "$url" | getJS
+}
 nuclei(){
     printf "\033[93m Quais templates quer usar?\033[92m\n"
     printf "1-todos\n"
@@ -82,7 +87,10 @@ while true; do
         3)
             subd
             ;;
-        9)
+        4)
+            javascript 
+            ;;
+        00)
             printf "\033[93mSaindo...\033[0m\n"
             exit 0
             ;;
