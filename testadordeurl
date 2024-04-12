@@ -26,7 +26,7 @@ acharurls(){
 }
 
 javascript(){
-    printf "coletando informações no JavaScript"\n
+    printf "coletando informações no JavaScript...\n"
     printf "$url" | getJS
 }
 nuclei(){
