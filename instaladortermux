@@ -56,7 +56,7 @@ printf "\033[1;36m Baixando repositórios de ferramentas de \033[92mPYTHON\033[0
 sleep 3 
 
 # Baixando Repositórios do GitHub
-declare -A repos=(
+declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
     ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
     ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
@@ -65,26 +65,34 @@ declare -A repos=(
     ["zphisher"]="https://github.com/htr-tech/zphisher"
     ["cam-finder"]="https://github.com/member87/cam-finder.git"
     ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
-) 
+    ["Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
+)
 
-for repo in "${!repos[@]}"; do
+for repo in "${!links[@]}"; do
     if [ ! -d "$repo" ]; then
         # Diretório não existe, então clone-o
         printf "Clonando %s...\n" "${repo}"
-        git clone "${repos[$repo]}" 
+        git clone "${links[$repo]}" 
 
         # Verificar e instalar requirements.txt se existir
         if [ -f "${repo}/requirements.txt" ]; then
-            printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
+            printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
             pip install -r "${repo}/requirements.txt"
         fi 
 
         if [ "$repo" == "ParamSpider" ]; then
-            # Apenas para o ParamSpider, instalar usando o comando "."
-            printf "\033[92mInstalando ParamSpider usando '.'...\033[0m\n"
+            # Apenas para o ParamSpider, instalação diferente.
+            printf "\033[92mInstalando ParamSpider...\033[0m\n"
             pip install "$repo"
         fi 
-
+      
+        if [ "$repo" == "Tool-X" ]; then
+            printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
+            if [ -f "${repo}/install.aex" ]; then
+                chmod +x "${repo}/install.aex
+                ./{repo}/install.aex
+            fi
+        fi
     else
         printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
         git -C "$repo" reset --hard
