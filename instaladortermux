@@ -3,89 +3,89 @@
 if [ "$(uname)" != "Linux" ]; then
     printf "\033[1;32mYou are not using Termux (GNU/Linux)\033[0m\n"
     exit 1
-fi 
+fi
 
-clear 
+clear
 
 printf "\033[1;36m Starting to update Termux...\033[0m\n"
-sleep 3 
+sleep 3
 
-cd ~ 
+cd ~
 
-apt update -y && apt full-upgrade -y 
+apt update -y && apt full-upgrade -y
 
-clear 
+clear
 
 printf "\033[1;36m Installing the necessary tools Wget, Curl, Python and Golang....\033[0m\n"
-sleep 3 
+sleep 3
 
 # Installing packages
 apt install python -y
 apt install golang -y
 apt install curl -y
-apt install wget -y 
+apt install wget -y
 
-clear 
+clear
 
 printf "\033[1;36m Installing tools in Golang...\033[0m\n"
-sleep 3 
+sleep 3
 
 declare -A ferramentas=(
-    ["kxss"]="github.com/Emoe/kxss@latest"
-    ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
-    ["httpx"]="github.com/projectdiscovery/httpx/cmd/httpx@latest"
-    ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
-    ["anew"]="github.com/tomnomnom/anew@latest"
-    ["ffuf"]="github.com/ffuf/ffuf@latest"
-    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
-) 
+    ["kxss"]="github.com/Emoe/kxss@latest"
+    ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+    ["httpx"]="github.com/projectdiscovery/httpx/cmd/httpx@latest"
+    ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
+    ["anew"]="github.com/tomnomnom/anew@latest"
+    ["ffuf"]="github.com/ffuf/ffuf@latest"
+    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+)
 
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "\033[92mInstalling \033[96m%s...\033[0m\n" "${ferramenta}"
-    sleep 1
-    go install -v "${ferramentas[$ferramenta]}"
-done 
+    printf "\033[92mInstalling \033[96m%s...\033[0m\n" "${ferramenta}"
+    sleep 1
+    go install -v "${ferramentas[$ferramenta]}"
+done
 
-~/go/bin/nuclei -update-templates 
+~/go/bin/nuclei -update-templates
 
-sleep 3 
+sleep 3
 
-clear 
+clear
 
 printf "\033[1;36m Downloading repositories of Python tools...\033[0m\n"
-sleep 3 
+sleep 3
 
 # Downloading GitHub repositories
 declare -A links=(
-    ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
-    ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
-    ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
-    ["sherlock"]="https://github.com/sherlock-project/sherlock"
-    ["git-dumper"]="https://github.com/arthaud/git-dumper"
-    ["zphisher"]="https://github.com/htr-tech/zphisher"
-    ["cam-finder"]="https://github.com/member87/cam-finder.git"
-    ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
+    ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
+    ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
+    ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
+    ["sherlock"]="https://github.com/sherlock-project/sherlock"
+    ["git-dumper"]="https://github.com/arthaud/git-dumper"
+    ["zphisher"]="https://github.com/htr-tech/zphisher"
+    ["cam-finder"]="https://github.com/member87/cam-finder.git"
+    ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
     ["Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
 )
 
 for repo in "${!links[@]}"; do
-    if [ ! -d "$repo" ]; then
-        # Diretório não existe, então clone-o
-        printf "Clonando %s...\n" "${repo}"
-        git clone "${links[$repo]}" 
+    if [ ! -d "$repo" ]; then
+        # Diretório não existe, então clone-o
+        printf "Clonando %s...\n" "${repo}"
+        git clone "${links[$repo]}"
 
-        # Verificar e instalar requirements.txt se existir
-        if [ -f "${repo}/requirements.txt" ]; then
-            printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
-            pip install -r "${repo}/requirements.txt"
-        fi 
+        # Verificar e instalar requirements.txt se existir
+        if [ -f "${repo}/requirements.txt" ]; then
+            printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
+            pip install -r "${repo}/requirements.txt"
+        fi
 
-        if [ "$repo" == "ParamSpider" ]; then
-            # Apenas para o ParamSpider, instalação diferente.
-            printf "\033[92mInstalando ParamSpider...\033[0m\n"
-            pip install "$repo"
-        fi 
-      
+        if [ "$repo" == "ParamSpider" ]; then
+            # Apenas para o ParamSpider, instalação diferente.
+            printf "\033[92mInstalando ParamSpider...\033[0m\n"
+            pip install "$repo"
+        fi
+
         if [ "$repo" == "Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
             if [ -f "${repo}/install.aex" ]; then
@@ -93,20 +93,20 @@ for repo in "${!links[@]}"; do
                 ./{repo}/install.aex
             fi
         fi
-    else
-        printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
-        git -C "$repo" reset --hard
-        git -C "$repo" pull
-    fi
-done 
+    else
+        printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
+        git -C "$repo" reset --hard
+        git -C "$repo" pull
+    fi
+done
 
-clear 
+clear
 
 printf "\033[1;92mInstalação concluída\033[0m\n"
 sleep 3
-clear 
+clear
 
-cp ~/go/bin/* ~/../usr/bin 
+cp ~/go/bin/* ~/../usr/bin
 
 printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/../usr/bin para facilitar o uso das mesmas.\n"
 printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
