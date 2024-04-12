@@ -1,13 +1,13 @@
-#!/bin/bash 
+#!/bin/bash
 
 if [ "$(uname)" != "Linux" ]; then
-    printf "\033[1;32mVocê não está usando o Termux (GNU/Linux)\033[0m\n"
-    exit 1
+    printf "\033[1;32mYou are not using Termux (GNU/Linux)\033[0m\n"
+    exit 1
 fi 
 
 clear 
 
-printf "\033[1;36m Vamos começar atualizando o \033[1;92mTermux...\033[0m\n"
+printf "\033[1;36m Starting to update Termux...\033[0m\n"
 sleep 3 
 
 cd ~ 
@@ -16,10 +16,10 @@ apt update -y && apt full-upgrade -y
 
 clear 
 
-printf "\033[1;36m Instalando o Wget e Curl, e as duas linguagens necessárias \033[1;92mPython e Golang....\033[0m\n"
+printf "\033[1;36m Installing the necessary tools Wget, Curl, Python and Golang....\033[0m\n"
 sleep 3 
 
-# Instalando pacotes
+# Installing packages
 apt install python -y
 apt install golang -y
 apt install curl -y
@@ -27,7 +27,7 @@ apt install wget -y
 
 clear 
 
-printf "\033[1;36m Instalando ferramentas em \033[1;32mGolang...\033[0m\n"
+printf "\033[1;36m Installing tools in Golang...\033[0m\n"
 sleep 3 
 
 declare -A ferramentas=(
@@ -41,7 +41,7 @@ declare -A ferramentas=(
 ) 
 
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "\033[92mInstalando \033[96m%s...\033[0m\n" "${ferramenta}"
+    printf "\033[92mInstalling \033[96m%s...\033[0m\n" "${ferramenta}"
     sleep 1
     go install -v "${ferramentas[$ferramenta]}"
 done 
@@ -52,10 +52,10 @@ sleep 3
 
 clear 
 
-printf "\033[1;36m Baixando repositórios de ferramentas de \033[92mPYTHON\033[0m\n"
+printf "\033[1;36m Downloading repositories of Python tools...\033[0m\n"
 sleep 3 
 
-# Baixando Repositórios do GitHub
+# Downloading GitHub repositories
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
     ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
