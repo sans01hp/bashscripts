@@ -95,7 +95,7 @@ for repo in "${!links[@]}"; do
         if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
             cd "$repo"
-            chmod +x "${repo}/install.aex"
+            chmod +x install.aex
             ./install.aex
             cd ~
         fi
