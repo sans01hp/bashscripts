@@ -65,7 +65,7 @@ declare -A links=(
     ["zphisher"]="https://github.com/htr-tech/zphisher"
     ["cam-finder"]="https://github.com/member87/cam-finder.git"
     ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
-    ["Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
+    ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
 )
 
 for repo in "${!links[@]}"; do
@@ -86,7 +86,7 @@ for repo in "${!links[@]}"; do
             pip install "$repo"
         fi
 
-        if [ "$repo" == "Tool-X" ]; then
+        if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
             if [ -f "${repo}/install.aex" ]; then
                 chmod +x "${repo}/install.aex"
