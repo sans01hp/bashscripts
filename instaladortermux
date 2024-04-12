@@ -83,15 +83,17 @@ for repo in "${!links[@]}"; do
         if [ "$repo" == "ParamSpider" ]; then
             # Apenas para o ParamSpider, instalação diferente.
             printf "\033[92mInstalando ParamSpider...\033[0m\n"
-            pip install "$repo"
+            cd "$repo"
+            pip install .
+            cd ~
         fi
 
         if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
-            if [ -f "${repo}/install.aex" ]; then
-                chmod +x "${repo}/install.aex"
-                ./{repo}/install.aex
-            fi
+            cd "$repo"
+            chmod +x "${repo}/install.aex"
+            ./install.aex
+            cd ~
         fi
     else
         printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
