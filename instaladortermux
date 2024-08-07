@@ -16,7 +16,7 @@ apt update -y
 
 clear
 
-printf "\033[1;36m Instalando Wget, Curl, Python, Golang....\033[0m\n"
+printf "\033[36mInstalando linguagens de programação e ferramentas necessárias....\033[0m\n"
 sleep 3
 
 # Instando pacotes
@@ -24,7 +24,7 @@ apt install python -y
 apt install golang -y
 apt install curl -y
 apt install wget -y
-
+apt install pipx -y
 clear
 
 printf "\033[1;36m Instalando ferramentas em Golang...\033[0m\n"
@@ -48,8 +48,8 @@ done
 
 clear
 
-printf "\033[36mBaixando ferramentas em Python...\033[0m\n"
-sleep 3
+printf "\033[36mBaixando repositórios de outras ferramentas necessárias para o script \033[92mtestadordeurl\033[0m...\n"
+printf "\033[91mAlgumas ferramentas possuem instalações diferentes. esse script apenas suporta instalação das dependências das ferramentas via pipx. verifique como instalar a ferramenta no github se necessário\033[0m\n"
 
 # Baixando Repositórios 
 declare -A links=(
@@ -73,15 +73,7 @@ for repo in "${!links[@]}"; do
         # Verificar e instalar requirements.txt se existir
         if [ -f "${repo}/requirements.txt" ]; then
             printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
-            pip install -r "${repo}/requirements.txt"
-        fi
-
-        if [ "$repo" == "ParamSpider" ]; then
-            # Apenas para o ParamSpider, instalação diferente.
-            printf "\033[92mInstalando ParamSpider...\033[0m\n"
-            cd "$repo"
-            pip install .
-            cd ~
+            pipx install -r "${repo}/requirements.txt"
         fi
 
         if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
