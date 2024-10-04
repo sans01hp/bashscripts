@@ -88,11 +88,9 @@ for repo in "${!links[@]}"; do
         if [ "$repo" == "ParamSpider" ]; then
             # Apenas para o ParamSpider, instalação diferente.
             printf "\033[92mInstalando ParamSpider...\033[0m\n"
-            cd "$repo"
-            pip install .
-            cd ~
+            pip install "$repo"
         fi
-
+      
         if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
             printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
             cd "$repo"
