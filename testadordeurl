@@ -94,6 +94,7 @@ while true; do
         9)
             printf "\033[93mDigite o \033[96mDominio/Url \033[93mque deseja analisar:\033[0m\n"
             read url
+            printf "\033[93mAtualmente analisando o link: \033[96m%s\033[0m\n" "$url"
             ;;
         00)
             printf "\033[93mSaindo...\033[0m\n"
