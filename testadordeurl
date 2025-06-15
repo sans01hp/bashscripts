@@ -17,7 +17,7 @@ menu(){
     printf "2-\033[95mUsar Nuclei \033[91m[ROOT NECESSÁRIO]\033[0m\n"
     printf "3-\033[94mSubdominios ativos\033[0m\n"
     printf "4-\033[96mAchar informações no JavaScript\033[0m\n"
-    printf "9-\033[97mMudar alvo\033[0m\n"
+    printf "9-\033[91mMudar alvo\033[0m\n"
     printf "00-\033[93mSair\033[0m\n"
 }
 
