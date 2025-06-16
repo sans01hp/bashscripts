@@ -24,7 +24,7 @@ printf "\033[36mInstalando linguagens de programação e ferramentas necessária
 sleep 3
 
 # Instando pacotes
-sudo apt install python -y
+sudo apt install python3 -y
 sudo apt install golang -y
 sudo apt install curl -y
 sudo apt install wget -y
