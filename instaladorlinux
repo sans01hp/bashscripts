@@ -1,5 +1,9 @@
 #!/bin/bash
 
+printf "\033[93mEsse script foi feito com o propósito de ser usado no Kali para o userland\033[0m\n"
+
+sleep 2
+
 if [ "$(uname)" != "Linux" ]; then
     printf "\033[1;32mVocê não está usando um sistema GNU/Linux ou similar\033[0m\n"
     exit 1
@@ -16,22 +20,17 @@ sudo apt update -y
 
 clear
 
-printf "\033[1;36m Instalando as duas linguagens necessárias \033[1;92mPython e Golang...\033[0m\n"
+printf "\033[36mInstalando linguagens de programação e ferramentas necessárias....\033[0m\n"
 sleep 3
 
-# Instalando o Python
-sudo apt install python -y
-
-# Instalando o Go
+# Instando pacotes
+sudo apt install python3 -y
 sudo apt install golang -y
-
-# Instalando o curl e o wget
 sudo apt install curl -y
 sudo apt install wget -y
-
 clear
 
-printf "\033[1;36m Instalando ferramentas em \033[1;32mGolang...\033[0m\n"
+printf "\033[36m Instalando ferramentas em Golang...\033[0m\n"
 sleep 3
 
 declare -A ferramentas=(
@@ -41,23 +40,19 @@ declare -A ferramentas=(
     ["gau"]="github.com/lc/gau/v2/cmd/gau@latest"
     ["anew"]="github.com/tomnomnom/anew@latest"
     ["ffuf"]="github.com/ffuf/ffuf@latest"
-    ["nuclei"]="github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
     ["getJS"]="github.com/003random/getJS@latest"
 )
 
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "\033[92mInstalando \033[96m%s\033[0m\n" "$ferramenta"
-    sleep 3
+    printf "\033[92mInstalando \033[96m%s...\033[0m\n" "${ferramenta}"
+    sleep 1
     go install -v "${ferramentas[$ferramenta]}"
 done
 
-~/go/bin/nuclei -update-templates
-
-sleep 3
-
 clear
 
-printf "\033[36mBaixando ferramentas em Python...\033[0m\n"
+printf "\033[36mBaixando repositórios de outras ferramentas necessárias para o script \033[92mtestadordeurl\033[0m...\n"
+printf "\033[91mAlgumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas peaquisando elas em \033[92mhttps://github.com\033[0m\n"
 sleep 3
 
 # Baixando Repositórios 
@@ -84,20 +79,19 @@ for repo in "${!links[@]}"; do
             printf "\033[92mInstalando dependências com pip para %s...\033[0m\n" "${repo}"
             pip install -r "${repo}/requirements.txt"
         fi
-
-        if [ "$repo" == "ParamSpider" ]; then
-            # Apenas para o ParamSpider, instalação diferente.
-            printf "\033[92mInstalando ParamSpider...\033[0m\n"
-            pip install "$repo"
-        fi
-      
-        if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
-            printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
-            cd "$repo"
-            sudo chmod +x install.aex
-            ./install.aex
-            cd ~
-        fi
+# Essa parte do script está desabilitada devido mudanças na instalação e provavelmente será removida!
+#        if [ "$repo" == "ParamSpider" ]; then
+#            printf "\033[94mInstalando ParamSpider...\033[0m\n" 
+#            pip install "$repo"
+#        fi
+#
+#        if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
+#          printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
+#             cd "$repo"
+#            chmod +x install.aex
+#            ./install.aex
+#            cd ~
+#        fi
     else
         printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
         git -C "$repo" reset --hard
@@ -111,11 +105,10 @@ printf "\033[1;92mInstalação concluída\033[0m\n"
 sleep 3
 clear
 
-sudo cp ~/go/bin/* /usr/bin
+cp ~/go/bin/* ../../usr/bin
 
-printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para /usr/bin para facilitar o uso das mesmas.\n"
-printf "Ao invés de digitar o caminho ~/go/bin/ferramenta você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
+printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/usr/bin para facilitar o uso das mesmas.\n"
+printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
 printf "Ex1: \033[96msubfinder -d alvo\033[0m\n"
 printf "Ex2: \033[94mffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist\033[0m\n"
 printf "Ex3: \033[95mnuclei -u alvo -t ~/nuclei-templates/cves\033[0m\n"
-exit 0
