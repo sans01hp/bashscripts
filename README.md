@@ -4,9 +4,11 @@ git clone https://github.com/sans01hp/bashscripts
 
 cd bashscripts 
 
-chmod +x instaladorlinux instaladortermux
+chmod +x instaladorlinux 
 
-./instalador(linux/termux)
+./instaladorlinux
 
-use o instaladorlinux caso você precise de permissão do usuário root.
+ Permissão do usuário root necessário
+
+# Esse script foi feito com a intenção de ser usado no KaliLinux do app userland no celular.
 
