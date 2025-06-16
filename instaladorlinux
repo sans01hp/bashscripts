@@ -56,7 +56,7 @@ printf "\033[91mAlgumas ferramentas possuem instalações diferentes. Verifique 
 printf "\033[92mBaixando pipx\033[0m\n"
 
 # O kali linux deixou de usar o pip e recomenda o uso do pipx
-sudo apt install pipx
+sudo apt install pipx -y
 
 sleep 3
 
