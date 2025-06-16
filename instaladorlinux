@@ -79,12 +79,13 @@ for repo in "${!links[@]}"; do
         printf "Clonando %s...\n" "${repo}"
         git clone "${links[$repo]}"
 
-        # Verificar e instalar requirements.txt se existir
-        if [ -f "${repo}/requirements.txt" ]; then
-            printf "\033[92mInstalando dependências com pipx para %s...\033[0m\n" "${repo}"
-            pipx install "${repo}/requirements.txt"
-        fi
 # Essa parte do script está desabilitada devido mudanças na instalação e provavelmente será removida!
+#        # Verificar e instalar requirements.txt se existir
+#        if [ -f "${repo}/requirements.txt" ]; then
+#            printf "\033[92mInstalando dependências com pipx para %s...\033[0m\n" "${repo}"
+#            pipx install "${repo}/requirements.txt"
+#        fi
+#
 #        if [ "$repo" == "ParamSpider" ]; then
 #            printf "\033[94mInstalando ParamSpider...\033[0m\n" 
 #            pip install "$repo"
