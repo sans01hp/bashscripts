@@ -113,7 +113,7 @@ clear
 
 cp ~/go/bin/* /usr/local/bin
 
-printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/usr/bin para facilitar o uso das mesmas.\n"
+printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/usr/local/bin para facilitar o uso das mesmas.\n"
 printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
 printf "Ex1: \033[96msubfinder -d alvo\033[0m\n"
 printf "Ex2: \033[94mffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist\033[0m\n"
