@@ -99,6 +99,8 @@ for repo in "${!links[@]}"; do
     else
         echo "O repositório $repo não é um pacote Python instalável. Instalação manual será necessária."
     fi
+
+    cp ~/venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || echo "Executável ${repo} não encontrado no venv/bin"
 done
 
 deactivate
@@ -108,7 +110,7 @@ printf "\033[1;92mInstalação concluída\033[0m\n"
 sleep 3
 clear
 
-cp ~/go/bin/* ../../usr/bin
+cp ~/go/bin/* /usr/local/bin
 
 printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/usr/bin para facilitar o uso das mesmas.\n"
 printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
