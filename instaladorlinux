@@ -25,6 +25,7 @@ sleep 3
 
 # Instando pacotes
 sudo apt install python3 -y
+sudo apt install pypy3-venv -y
 sudo apt install golang -y
 sudo apt install curl -y
 sudo apt install wget -y
@@ -55,7 +56,7 @@ printf "\033[36mBaixando repositórios de outras ferramentas necessárias para o
 printf "\033[91mAlgumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em \033[92mhttps://github.com\033[0m\n"
 printf "\033[92mBaixando pipx\033[0m\n"
 
-# O kali linux deixou de usar o pip e recomenda o uso do pipx
+# O kali linux deixou de usar o pip e recomenda o uso do pipx, mais a frente um ambiente virtual será criado para usar o pip para instalar as ferramentas 
 sudo apt install pipx -y
 
 sleep 3
@@ -78,26 +79,6 @@ for repo in "${!links[@]}"; do
         # Diretório não existe, então clone-o
         printf "Clonando %s...\n" "${repo}"
         git clone "${links[$repo]}"
-
-# Essa parte do script está desabilitada devido mudanças na instalação e provavelmente será removida!
-#        # Verificar e instalar requirements.txt se existir
-#        if [ -f "${repo}/requirements.txt" ]; then
-#            printf "\033[92mInstalando dependências com pipx para %s...\033[0m\n" "${repo}"
-#            pipx install "${repo}/requirements.txt"
-#        fi
-#
-#        if [ "$repo" == "ParamSpider" ]; then
-#            printf "\033[94mInstalando ParamSpider...\033[0m\n" 
-#            pip install "$repo"
-#        fi
-#
-#        if [ "$repo" == "https-github.com-Rajkumrdusad-Tool-X" ]; then
-#          printf "\033[93mInstalando o %s...\033[0m\n" "${repo}"
-#             cd "$repo"
-#            chmod +x install.aex
-#            ./install.aex
-#            cd ~
-#        fi
     else
         printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
         git -C "$repo" reset --hard
@@ -105,6 +86,18 @@ for repo in "${!links[@]}"; do
     fi
 done
 
+#Criando ambiente virtual para instalação das dependências com pip
+python3 -m venv path/to/venv
+
+source path/to/venv/bin/activate
+
+sudo apt install pip -y
+
+for repo in "${!links[@]}"; do
+    pip install "${repo}"
+    cp ~/path/to/venv/bin/${repo} /usr/bin
+done
+deactivate 
 clear
 
 printf "\033[1;92mInstalação concluída\033[0m\n"
