@@ -1,29 +1,43 @@
 #!/bin/bash
 
-printf "\033[93mEsse script foi feito com o propósito de ser usado no Kali para o userland\033[0m\n"
+# Definição das cores ANSI
+YELLOW="\033[93m"
+GREEN_BOLD="\033[1;32m"
+CYAN_BOLD="\033[1;36m"
+GREEN_LIGHT="\033[1;92m"
+CYAN="\033[36m"
+GREEN="\033[92m"
+CYAN_LIGHT="\033[96m"
+RED_BOLD="\033[1;91m"
+YELLOW_BOLD="\033[1;93m"
+BLUE_LIGHT="\033[94m"
+PURPLE_LIGHT="\033[95m"
+RESET="\033[0m"
+
+printf "${YELLOW}Esse script foi feito com o propósito de ser usado no Kali para o userland${RESET}\n"
 
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
-    printf "\033[1;32mVocê não está usando um sistema GNU/Linux ou similar\033[0m\n"
+    printf "${GREEN_BOLD}Você não está usando um sistema GNU/Linux ou similar${RESET}\n"
     exit 1
 fi
 
 clear
 
-printf "\033[1;36m Vamos começar atualizando o \033[1;92mLinux...\033[0m\n"
+printf "${CYAN_BOLD} Vamos começar atualizando o ${GREEN_LIGHT}Linux...${RESET}\n"
 sleep 3
 
 cd ~
 
-sudo apt update -y 
+sudo apt update -y
 
 clear
 
-printf "\033[36mInstalando linguagens de programação e ferramentas necessárias....\033[0m\n"
+printf "${CYAN}Instalando linguagens de programação e ferramentas necessárias....${RESET}\n"
 sleep 3
 
-# Instando pacotes
+# Instalando pacotes
 sudo apt install python3 -y
 sudo apt install pypy3-venv -y
 sudo apt install golang -y
@@ -31,7 +45,7 @@ sudo apt install curl -y
 sudo apt install wget -y
 clear
 
-printf "\033[36m Instalando ferramentas em Golang...\033[0m\n"
+printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
 sleep 3
 
 declare -A ferramentas=(
@@ -45,18 +59,18 @@ declare -A ferramentas=(
 )
 
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "\033[92mInstalando \033[96m%s...\033[0m\n" "${ferramenta}"
+    printf "${GREEN}Instalando ${CYAN_LIGHT}%s...${RESET}\n" "${ferramenta}"
     sleep 1
     go install -v "${ferramentas[$ferramenta]}"
 done
 
 clear
 
-printf "\033[36mBaixando repositórios de outras ferramentas necessárias para o script \033[92mtestadordeurl\033[0m...\n"
-printf "\033[91mAlgumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em \033[92mhttps://github.com\033[0m\n"
-printf "\033[92mBaixando pipx\033[0m\n"
+printf "${CYAN}Baixando repositórios de outras ferramentas necessárias para o script ${GREEN}testadordeurl${RESET}...\n"
+printf "${RED_BOLD}Algumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em ${GREEN}https://github.com${RESET}\n"
+printf "${GREEN}Baixando pipx${RESET}\n"
 
-# O kali linux deixou de usar o pip e recomenda o uso do pipx, mais a frente um ambiente virtual será criado para usar o pip para instalar as ferramentas 
+# O kali linux deixou de usar o pip e recomenda o uso do pipx, mais a frente um ambiente virtual será criado para usar o pip para instalar as ferramentas
 sudo apt install pipx -y
 
 sleep 3
@@ -80,7 +94,7 @@ for repo in "${!links[@]}"; do
         printf "Clonando %s...\n" "${repo}"
         git clone "${links[$repo]}"
     else
-        printf "\033[92mAtualizando o repositório \033[96m%s...\033[0m\n" "${repo}"
+        printf "${GREEN}Atualizando o repositório ${CYAN_LIGHT}%s...${RESET}\n" "${repo}"
         git -C "$repo" reset --hard
         git -C "$repo" pull
     fi
@@ -94,27 +108,29 @@ for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
 
     if [ -f "$REPO_PATH/setup.py" ] || [ -f "$REPO_PATH/pyproject.toml" ]; then
-        printf "\033[1;92mTentando instalar $repo com pip\033[0m\n"
- 
-        pip install "$REPO_PATH" || printf "\033[1;91mFalha ao instalar $repo com pip. Instale manualmente se necessário.\033[0m\n"
+        printf "${GREEN_BOLD}Tentando instalar $repo com pip${RESET}\n"
+
+        pip install "$REPO_PATH" || \
+        printf "${RED_BOLD}Falha ao instalar $repo com pip. Instale manualmente se necessário.${RESET}\n"
     else
-        printf "\O33[1;93mRepositório $repo não é um pacote Python instalável. Instalação manual será necessária.\033[0m\n"
+        printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
     fi
 
-    cp ~/venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || printf "\033[1;93mExecutável ${repo} não encontrado no venv/bin\033[0m\n"
+    cp ~/venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || \
+    printf "${YELLOW_BOLD}Executável ${repo} não encontrado no venv/bin${RESET}\n"
 done
 
 deactivate
 clear
 
-printf "\033[1;92mInstalação concluída\033[0m\n"
+printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
 sleep 3
 clear
 
 cp ~/go/bin/* /usr/local/bin
 
-printf "\033[93mAviso: \033[92mAs ferramentas em Golang foram copiadas para ~/usr/local/bin para facilitar o uso das mesmas.\n"
-printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome\033[0m\n"
-printf "Ex1: \033[96msubfinder -d alvo\033[0m\n"
-printf "Ex2: \033[94mffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist\033[0m\n"
-printf "Ex3: \033[95mnuclei -u alvo -t ~/nuclei-templates/cves\033[0m\n"
+printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram copiadas para ~/usr/local/bin para facilitar o uso das mesmas.\n"
+printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
+printf "Ex1: ${CYAN_LIGHT}subfinder -d alvo${RESET}\n"
+printf "Ex2: ${BLUE_LIGHT}ffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist${RESET}\n"
+printf "Ex3: ${PURPLE_LIGHT}nuclei -u alvo -t ~/nuclei-templates/cves${RESET}\n"
