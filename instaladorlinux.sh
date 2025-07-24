@@ -56,6 +56,7 @@ declare -A ferramentas=(
     ["anew"]="github.com/tomnomnom/anew@latest"
     ["ffuf"]="github.com/ffuf/ffuf@latest"
     ["getJS"]="github.com/003random/getJS@latest"
+    ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
 )
 
 for ferramenta in "${!ferramentas[@]}"; do
