@@ -23,16 +23,14 @@ if [ "$(uname)" != "Linux" ]; then
     exit 1
 fi
 
-clear
 
 printf "${CYAN_BOLD} Vamos começar atualizando o ${GREEN_LIGHT}Linux...${RESET}\n"
 sleep 3
 
-cd ~
+cd
 
 sudo apt update -y
 
-clear
 
 printf "${CYAN}Instalando linguagens de programação e ferramentas necessárias....${RESET}\n"
 sleep 3
@@ -43,7 +41,6 @@ sudo apt install pypy3-venv -y
 sudo apt install golang -y
 sudo apt install curl -y
 sudo apt install wget -y
-clear
 
 printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
 sleep 3
@@ -65,7 +62,6 @@ for ferramenta in "${!ferramentas[@]}"; do
     go install -v "${ferramentas[$ferramenta]}"
 done
 
-clear
 
 printf "${CYAN}Baixando repositórios de outras ferramentas necessárias para o script ${GREEN}testadordeurl${RESET}...\n"
 printf "${RED_BOLD}Algumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em ${GREEN}https://github.com${RESET}\n"
@@ -117,21 +113,19 @@ for repo in "${!links[@]}"; do
         printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
     fi
 
-    cp ~/venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || \
+    cp /venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || \
     printf "${YELLOW_BOLD}Executável ${repo} não encontrado no venv/bin${RESET}\n"
-done
+done > logpip.txt
 
 deactivate
-clear
 
 printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
 sleep 3
-clear
 
-cp ~/go/bin/* /usr/local/bin
+cp /go/bin/* /usr/local/bin
 
-printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram copiadas para ~/usr/local/bin para facilitar o uso das mesmas.\n"
-printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
+printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram copiadas para /usr/local/bin para facilitar o uso das mesmas.\n"
+printf "Ao invés de digitar o caminho /go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
 printf "Ex1: ${CYAN_LIGHT}subfinder -d alvo${RESET}\n"
 printf "Ex2: ${BLUE_LIGHT}ffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist${RESET}\n"
-printf "Ex3: ${PURPLE_LIGHT}nuclei -u alvo -t ~/nuclei-templates/cves${RESET}\n"
+printf "Ex3: ${PURPLE_LIGHT}nuclei -u alvo -t /nuclei-templates/cves${RESET}\n"
