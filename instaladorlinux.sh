@@ -41,7 +41,9 @@ sudo apt install pypy3-venv -y
 sudo apt install golang -y
 sudo apt install curl -y
 sudo apt install wget -y
-
+sudo apt install iputils-ping -y
+sudo apt install openssh-client -y
+sudo apt install micro -y
 printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
 sleep 3
 
