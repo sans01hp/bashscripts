@@ -44,7 +44,11 @@ sudo apt install wget -y
 sudo apt install iputils-ping -y
 sudo apt install openssh-client -y
 sudo apt install micro -y
+
+printf "${YELLOW_BOLD}Editor ${GREEN_LIGHT}micro ${YELLOW_LIGHT}instalado. Use se precisar de autocomplete para comandos${RESET}\n"
+
 printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
+
 sleep 3
 
 declare -A ferramentas=(
@@ -66,7 +70,9 @@ done
 
 
 printf "${CYAN}Baixando repositórios de outras ferramentas necessárias para o script ${GREEN}testadordeurl${RESET}...\n"
+
 printf "${RED_BOLD}Algumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em ${GREEN}https://github.com${RESET}\n"
+
 printf "${GREEN}Baixando pipx${RESET}\n"
 
 # O kali linux deixou de usar o pip e recomenda o uso do pipx, mais a frente um ambiente virtual será criado para usar o pip para instalar as ferramentas
@@ -77,14 +83,15 @@ sleep 3
 # Baixando Repositórios
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
-    ["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
+   #["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
     ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
     ["sherlock"]="https://github.com/sherlock-project/sherlock"
     ["git-dumper"]="https://github.com/arthaud/git-dumper"
     ["zphisher"]="https://github.com/htr-tech/zphisher"
-    ["cam-finder"]="https://github.com/member87/cam-finder.git"
+   #["cam-finder"]="https://github.com/member87/cam-finder.git"
     ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
     ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
+    ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
 )
 
 for repo in "${!links[@]}"; do
