@@ -84,7 +84,7 @@ sleep 3
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
    #["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
-    ["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
+   #["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
     ["sherlock"]="https://github.com/sherlock-project/sherlock"
     ["git-dumper"]="https://github.com/arthaud/git-dumper"
     ["zphisher"]="https://github.com/htr-tech/zphisher"
@@ -131,7 +131,7 @@ deactivate
 printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
 sleep 3
 
-cp /go/bin/* /usr/local/bin
+cp ~/go/bin/* /usr/local/bin
 
 printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram copiadas para /usr/local/bin para facilitar o uso das mesmas.\n"
 printf "Ao invés de digitar o caminho /go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
