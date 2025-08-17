@@ -108,7 +108,7 @@ for repo in "${!links[@]}"; do
     else
         printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
     fi
-done > logpip.txt
+done | tee logpip.txt
 
 deactivate
 
