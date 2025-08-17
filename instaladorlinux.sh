@@ -1,7 +1,6 @@
 #!/bin/bash
-
 # Definição das cores ANSI
-YELLOW="\033[93m"
+YELLOW="\033[93m"            
 GREEN_BOLD="\033[1;32m"
 CYAN_BOLD="\033[1;36m"
 GREEN_LIGHT="\033[1;92m"
@@ -15,7 +14,6 @@ PURPLE_LIGHT="\033[95m"
 RESET="\033[0m"
 
 printf "${YELLOW}Esse script foi feito com o propósito de ser usado no Kali para o userland${RESET}\n"
-
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
@@ -23,14 +21,10 @@ if [ "$(uname)" != "Linux" ]; then
     exit 1
 fi
 
-
 printf "${CYAN_BOLD} Vamos começar atualizando o ${GREEN_LIGHT}Linux...${RESET}\n"
 sleep 3
-
 cd
-
 sudo apt update -y
-
 
 printf "${CYAN}Instalando linguagens de programação e ferramentas necessárias....${RESET}\n"
 sleep 3
@@ -48,7 +42,6 @@ sudo apt install micro -y
 printf "${YELLOW_BOLD}Editor ${GREEN_LIGHT}micro ${YELLOW_LIGHT}instalado. Use se precisar de autocomplete para comandos${RESET}\n"
 
 printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
-
 sleep 3
 
 declare -A ferramentas=(
@@ -68,27 +61,18 @@ for ferramenta in "${!ferramentas[@]}"; do
     go install -v "${ferramentas[$ferramenta]}"
 done
 
-
 printf "${CYAN}Baixando repositórios de outras ferramentas necessárias para o script ${GREEN}testadordeurl${RESET}...\n"
-
 printf "${RED_BOLD}Algumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em ${GREEN}https://github.com${RESET}\n"
-
 printf "${GREEN}Baixando pipx${RESET}\n"
-
-# O kali linux deixou de usar o pip e recomenda o uso do pipx, mais a frente um ambiente virtual será criado para usar o pip para instalar as ferramentas
 sudo apt install pipx -y
-
 sleep 3
 
 # Baixando Repositórios
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
-   #["Cam-Hackers"]="https://github.com/AngelSecurityTeam/Cam-Hackers"
-   #["EyeSeeYou"]="https://github.com/BraydenP07/EyeSeeYou"
     ["sherlock"]="https://github.com/sherlock-project/sherlock"
     ["git-dumper"]="https://github.com/arthaud/git-dumper"
     ["zphisher"]="https://github.com/htr-tech/zphisher"
-   #["cam-finder"]="https://github.com/member87/cam-finder.git"
     ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
     ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
     ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
@@ -96,7 +80,6 @@ declare -A links=(
 
 for repo in "${!links[@]}"; do
     if [ ! -d "$repo" ]; then
-        # Diretório não existe, então clone-o
         printf "Clonando %s...\n" "${repo}"
         git clone "${links[$repo]}"
     else
@@ -107,23 +90,24 @@ for repo in "${!links[@]}"; do
 done
 
 # Criando o ambiente virtual
-python3 -m venv venv/tools
-source venv/tools/bin/activate
+python3 -m venv ~/piplibs
+source ~/piplibs/bin/activate
 
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
 
     if [ -f "$REPO_PATH/setup.py" ] || [ -f "$REPO_PATH/pyproject.toml" ]; then
         printf "${GREEN_BOLD}Tentando instalar $repo com pip${RESET}\n"
-
         pip install "$REPO_PATH" || \
         printf "${RED_BOLD}Falha ao instalar $repo com pip. Instale manualmente se necessário.${RESET}\n"
+
+        # Criando link simbólico para executável Python no PATH
+        if [ -f ~/piplibs/bin/${repo} ]; then
+            sudo ln -sf ~/piplibs/bin/${repo} /usr/local/bin/${repo}
+        fi
     else
         printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
     fi
-
-    cp /venv/tools/bin/${repo} /usr/local/bin/ 2>/dev/null || \
-    printf "${YELLOW_BOLD}Executável ${repo} não encontrado no venv/bin${RESET}\n"
 done > logpip.txt
 
 deactivate
@@ -131,10 +115,14 @@ deactivate
 printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
 sleep 3
 
-cp ~/go/bin/* /usr/local/bin
+# Criando links simbólicos para ferramentas Go
+for go_tool in ~/go/bin/*; do
+    tool_name=$(basename "$go_tool")
+    sudo ln -sf "$go_tool" /usr/local/bin/"$tool_name"
+done
 
-printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram copiadas para /usr/local/bin para facilitar o uso das mesmas.\n"
-printf "Ao invés de digitar o caminho /go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
+printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.\n"
+printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
 printf "Ex1: ${CYAN_LIGHT}subfinder -d alvo${RESET}\n"
 printf "Ex2: ${BLUE_LIGHT}ffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist${RESET}\n"
 printf "Ex3: ${PURPLE_LIGHT}nuclei -u alvo -t /nuclei-templates/cves${RESET}\n"
