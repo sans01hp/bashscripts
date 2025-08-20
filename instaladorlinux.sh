@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Definição das cores ANSI
 YELLOW="\033[93m"            
 GREEN_BOLD="\033[1;32m"
