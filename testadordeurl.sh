@@ -22,16 +22,16 @@ menu() {
 
 acharurls() {
     printf "Montando urls em ${GREEN}%s${RESET}\n" "$url"
-    printf "%s\n" "$url" | gau
+    printf "%s\n" "$url" | gau 
 }
 
 javascript() {
-    printf "Coletando informações no JavaScript...\n"
-    printf "%s\n" "$url" | getJS
+    printf "Coletando informações no JavaScript...\n" 
+    printf "%s\n" "$url" | getJS 
 }
 
 nuclei() {
-    printf "${YELLOW}Quais templates quer usar?${GREEN}\n"
+    printf "${YELLOW}Quais templates quer usar?${GREEN}\n"  
     printf "1-todos\n"
     printf "2-exposures\n"
     printf "3-cves\n"
@@ -49,7 +49,7 @@ nuclei() {
         5) ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/fuzzing ;;
         6) ~/go/bin/nuclei -u "$url" -t ~/nuclei-templates/vulnerabilities ;;
         *)
-            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}(╯°□°）╯︵┻━┻${RESET}\n"
+            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}%s${RESET}\n" "(╯°□°）╯︵┻━┻" 
             return ;;
     esac
 }
@@ -61,11 +61,11 @@ subd() {
 }
 
 resetar_url() {
-    printf "${YELLOW}Digite o ${CYAN_LIGHT}Dominio/Url ${YELLOW}que deseja analisar:${RESET}\n"
+    printf "${YELLOW}Digite o ${CYAN_LIGHT}Dominio/Url ${YELLOW}que deseja analisar:${RESET}\n" 
     read url
 
     if [[ -z "$url" ]]; then
-        printf "${RED}URL vazia${RESET}\n"
+        printf "${RED}URL vazia${RESET}\n" 
         exit 1
     fi
 
@@ -76,9 +76,9 @@ resetar_url() {
 
     # Validação robusta de domínio/subdomínio com suporte a TLDs internacionais e caminhos
     if [[ "$url" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-        printf "${YELLOW}Atualmente analisando o link: ${CYAN_LIGHT}%s${RESET}\n" "$url"
+        printf "${YELLOW}Atualmente analisando o link: ${CYAN_LIGHT}%s${RESET}\n" "$url" 
     else
-        printf "${RED}[ERRO]${YELLOW} Dominio ou subdominio %s invalido${RESET}\n" "$url"
+        printf "${RED}[ERRO]${YELLOW} Dominio ou subdominio %s invalido${RESET}\n" "$url" 
         exit 2
     fi
 }
@@ -98,11 +98,14 @@ while true; do
         4) javascript ;;
         9) resetar_url ;;
         00)
-            printf "${YELLOW}Saindo...${RESET}\n"
+            printf "${YELLOW}Saindo...${RESET}\n" 
             exit 0
             ;;
         *)
-            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}(╯°□°）╯︵┻━┻${RESET}\n"
+            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}%s${RESET}\n" "(╯°□°）╯︵┻━┻" 
             ;;
     esac
 done
+
+
+

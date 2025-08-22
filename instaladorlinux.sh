@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-# Definição das cores ANSI
-YELLOW="\033[93m"            
+
+# =========================================================
+# Script de instalação de ferramentas e configuração do Micro com Python LSP
+# =========================================================
+
+# ---------- Cores ANSI ----------
+YELLOW="\033[93m"
 GREEN_BOLD="\033[1;32m"
 CYAN_BOLD="\033[1;36m"
 GREEN_LIGHT="\033[1;92m"
@@ -13,37 +18,57 @@ BLUE_LIGHT="\033[94m"
 PURPLE_LIGHT="\033[95m"
 RESET="\033[0m"
 
-printf "${YELLOW}Esse script foi feito com o propósito de ser usado no Kali para o userland${RESET}\n"
+printf "${YELLOW}Esse script foi feito para uso no Kali Linux UserLand${RESET}\n"
 sleep 2
 
+# ---------- Verifica se é Linux ----------
 if [ "$(uname)" != "Linux" ]; then
     printf "${GREEN_BOLD}Você não está usando um sistema GNU/Linux ou similar${RESET}\n"
     exit 1
 fi
 
-printf "${CYAN_BOLD} Vamos começar atualizando o ${GREEN_LIGHT}Linux...${RESET}\n"
-sleep 3
+printf "${CYAN_BOLD}Atualizando o sistema...${RESET}\n"
+sleep 2
 cd
 sudo apt update -y
 
-printf "${CYAN}Instalando linguagens de programação e ferramentas necessárias....${RESET}\n"
-sleep 3
+# ---------- Instalando pacotes ----------
+printf "${CYAN}Instalando linguagens e ferramentas necessárias...${RESET}\n"
+sleep 2
 
-# Instalando pacotes
-sudo apt install python3 -y
-sudo apt install pypy3-venv -y
-sudo apt install golang -y
-sudo apt install curl -y
-sudo apt install wget -y
-sudo apt install iputils-ping -y
-sudo apt install openssh-client -y
-sudo apt install micro -y
+sudo apt install -y python3 python3-venv pypy3-venv golang curl wget iputils-ping openssh-client micro pipx
 
-printf "${YELLOW_BOLD}Editor ${GREEN_LIGHT}micro ${YELLOW_LIGHT}instalado. Use se precisar de autocomplete para comandos${RESET}\n"
+printf "${YELLOW_BOLD}Editor ${GREEN_LIGHT}micro${YELLOW_LIGHT} instalado.${RESET}\n"
 
-printf "${CYAN} Instalando ferramentas em Golang...${RESET}\n"
-sleep 3
+# ---------- Instalando Python LSP ----------
+printf "${CYAN}Instalando python-lsp-server via pipx...${RESET}\n"
+pipx install 'python-lsp-server[all]'
 
+# ---------- Configurando Micro para usar LSP ----------
+MICRO_CONFIG_DIR="$HOME/.config/micro"
+MICRO_SETTINGS="$MICRO_CONFIG_DIR/settings.json"
+mkdir -p "$MICRO_CONFIG_DIR"
+
+# Se não existir settings.json, cria
+if [ ! -f "$MICRO_SETTINGS" ]; then
+    echo '{}' > "$MICRO_SETTINGS"
+fi
+
+# Adiciona ou atualiza a configuração do LSP para Python
+jq '. + {
+  "lsp": {
+    "python": {
+      "command": "pylsp",
+      "args": [],
+      "rootPatterns": [".git", ".venv", "pyproject.toml"]
+    }
+  }
+}' "$MICRO_SETTINGS" > "$MICRO_SETTINGS.tmp" && mv "$MICRO_SETTINGS.tmp" "$MICRO_SETTINGS"
+
+printf "${GREEN_BOLD}Micro configurado com Python LSP (pylsp).${RESET}\n"
+
+# ---------- Instalando ferramentas Go ----------
+printf "${CYAN}Instalando ferramentas Go...${RESET}\n"
 declare -A ferramentas=(
     ["kxss"]="github.com/Emoe/kxss@latest"
     ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
@@ -61,20 +86,15 @@ for ferramenta in "${!ferramentas[@]}"; do
     go install -v "${ferramentas[$ferramenta]}"
 done
 
-printf "${CYAN}Baixando repositórios de outras ferramentas necessárias para o script ${GREEN}testadordeurl${RESET}...\n"
-printf "${RED_BOLD}Algumas ferramentas possuem instalações diferentes. Verifique como instalar as ferramentas pesquisando elas em ${GREEN}https://github.com${RESET}\n"
-printf "${GREEN}Baixando pipx${RESET}\n"
-sudo apt install pipx -y
-sleep 3
-
-# Baixando Repositórios
+# ---------- Clonando repositórios ----------
+printf "${CYAN}Baixando repositórios necessários...${RESET}\n"
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
     ["sherlock"]="https://github.com/sherlock-project/sherlock"
     ["git-dumper"]="https://github.com/arthaud/git-dumper"
     ["zphisher"]="https://github.com/htr-tech/zphisher"
     ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
-    ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
+    ["Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
     ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
 )
 
@@ -83,46 +103,43 @@ for repo in "${!links[@]}"; do
         printf "Clonando %s...\n" "${repo}"
         git clone "${links[$repo]}"
     else
-        printf "${GREEN}Atualizando o repositório ${CYAN_LIGHT}%s...${RESET}\n" "${repo}"
+        printf "${GREEN}Atualizando %s...${RESET}\n" "$repo"
         git -C "$repo" reset --hard
         git -C "$repo" pull
     fi
 done
 
-# Criando o ambiente virtual
+# ---------- Criando ambiente virtual ----------
 python3 -m venv ~/piplibs
 source ~/piplibs/bin/activate
 
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
-
     if [ -f "$REPO_PATH/setup.py" ] || [ -f "$REPO_PATH/pyproject.toml" ]; then
-        printf "${GREEN_BOLD}Tentando instalar $repo com pip${RESET}\n"
+        printf "${GREEN_BOLD}Instalando $repo via pip...${RESET}\n"
         pip install "$REPO_PATH" || \
-        printf "${RED_BOLD}Falha ao instalar $repo com pip. Instale manualmente se necessário.${RESET}\n"
+        printf "${RED_BOLD}Falha ao instalar $repo via pip. Instale manualmente.${RESET}\n"
 
-        # Criando link simbólico para executável Python no PATH
         if [ -f ~/piplibs/bin/${repo} ]; then
             sudo ln -sf ~/piplibs/bin/${repo} /usr/local/bin/${repo}
         fi
     else
-        printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
+        printf "${YELLOW_BOLD}$repo não é um pacote Python instalável.${RESET}\n"
     fi
 done | tee logpip.txt
 
 deactivate
 
-printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
-sleep 3
-
-# Criando links simbólicos para ferramentas Go
+# ---------- Links simbólicos para ferramentas Go ----------
 for go_tool in ~/go/bin/*; do
     tool_name=$(basename "$go_tool")
     sudo ln -sf "$go_tool" /usr/local/bin/"$tool_name"
 done
 
-printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.\n"
-printf "Ao invés de digitar o caminho ~/go/bin/ferramenta, você poderá agora chamar a ferramenta apenas digitando o seu nome${RESET}\n"
-printf "Ex1: ${CYAN_LIGHT}subfinder -d alvo${RESET}\n"
-printf "Ex2: ${BLUE_LIGHT}ffuf -u alvo/FUZZ(palavra padrão para ser substituída pelas da wordlist) -w caminho da wordlist${RESET}\n"
-printf "Ex3: ${PURPLE_LIGHT}nuclei -u alvo -t /nuclei-templates/cves${RESET}\n"
+printf "${GREEN_BOLD}Instalação concluída!${RESET}\n"
+sleep 1
+printf "${YELLOW}Aviso: ${GREEN}As ferramentas Go foram linkadas para /usr/local/bin.\n"
+printf "Agora você pode chamá-las apenas pelo nome.${RESET}\n"
+printf "${CYAN_LIGHT}Ex1: subfinder -d alvo${RESET}\n"
+printf "${BLUE_LIGHT}Ex2: ffuf -u alvo/FUZZ -w caminho/da/wordlist${RESET}\n"
+printf "${PURPLE_LIGHT}Ex3: nuclei -u alvo -t /nuclei-templates/cves${RESET}\n"a
