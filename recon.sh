@@ -16,16 +16,16 @@ RESET="\033[0m"
 # ---------- Funções ----------
 menu() {
     clear
-    printf "1-${GREEN}Montar urls${RESET}\n"
-    printf "2-${PURPLE}Usar Nuclei ${RED}[ROOT NECESSÁRIO]${RESET}\n"
-    printf "3-${BLUE}Subdominios ativos${RESET}\n"
-    printf "4-${CYAN_LIGHT}Achar informações no JavaScript${RESET}\n"
-    printf "9-${RED}Mudar alvo${RESET}\n"
-    printf "00-${YELLOW}Sair${RESET}\n"
+    printf "%b1-Montar urls%b\n" "$GREEN" "$RESET"
+    printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b\n" "$PURPLE" "$RED" "$RESET"
+    printf "%b3-Subdominios ativos%b\n" "$BLUE" "$RESET"
+    printf "%b4-Achar informações no JavaScript%b\n" "$CYAN_LIGHT" "$RESET"
+    printf "%b9-Mudar alvo%b\n" "$RED" "$RESET"
+    printf "%b00-Sair%b\n" "$YELLOW" "$RESET"
 }
 
 acharurls() {
-    printf "Montando urls em ${GREEN}%s${RESET}\n" "$url"
+    printf "%bMontando urls em%b %s\n" "$GREEN" "$RESET" "$url"
     printf "%s\n" "$url" | gau
 }
 
@@ -35,13 +35,13 @@ javascript() {
 }
 
 nuclei() {
-    printf "${YELLOW}Quais templates quer usar?${GREEN}\n"
+    printf "%bQuais templates quer usar?%b\n" "$YELLOW" "$GREEN"
     printf "1-todos\n"
     printf "2-exposures\n"
     printf "3-cves\n"
     printf "4-exposed panels\n"
     printf "5-fuzzing\n"
-    printf "6-vulnerabilities${RESET}\n"
+    printf "6-vulnerabilities%b\n" "$RESET"
 
     read -r template
 
@@ -53,7 +53,7 @@ nuclei() {
         5) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/fuzzing ;;
         6) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/vulnerabilities ;;
         *)
-            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}%s${RESET}\n" "(╯°□°）╯︵┻━┻"
+            printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
             return ;;
     esac
 }
@@ -65,11 +65,11 @@ subd() {
 }
 
 resetar_url() {
-    printf "${YELLOW}Digite o ${CYAN_LIGHT}Dominio/Url ${YELLOW}que deseja analisar:${RESET}\n"
+    printf "%bDigite o %bDominio/Url %bque deseja analisar:%b\n" "$YELLOW" "$CYAN_LIGHT" "$YELLOW" "$RESET"
     read -r url
 
     if [[ -z "$url" ]]; then
-        printf "${RED}[ERRO]${YELLOW} URL vazia.${RESET}\n"
+        printf "%b[ERRO]%b URL vazia.%b\n" "$RED" "$YELLOW" "$RESET"
         return 1
     fi
 
@@ -80,16 +80,16 @@ resetar_url() {
 
     # Validação de domínio/subdomínio com suporte a TLDs internacionais e caminhos
     if [[ "$url" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-        printf "${YELLOW}Atualmente analisando o link: ${CYAN_LIGHT}%s${RESET}\n" "$url"
+        printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "$url" "$RESET"
     else
-        printf "${RED}[ERRO]${YELLOW} Dominio ou subdominio %s invalido.${RESET}\n" "$url"
+        printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "$url" "$RESET"
         return 2
     fi
 }
 
 # ---------- Entrada inicial ----------
 if [[ -z "$1" ]]; then
-    printf "${RED}[ERRO]${YELLOW} Você precisa passar uma URL como argumento.${RESET}\n"
+    printf "%b[ERRO]%b Você precisa passar uma URL como argumento.%b\n" "$RED" "$YELLOW" "$RESET"
     printf "Uso: %s <dominio ou url>\n" "$0"
     exit 1
 fi
@@ -103,9 +103,9 @@ fi
 
 # Validação inicial
 if [[ "$url" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-    printf "${YELLOW}Atualmente analisando o link: ${CYAN_LIGHT}%s${RESET}\n" "$url"
+    printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "$url" "$RESET"
 else
-    printf "${RED}[ERRO]${YELLOW} Dominio ou subdominio %s invalido.${RESET}\n" "$url"
+    printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "$url" "$RESET"
     exit 2
 fi
 
@@ -120,11 +120,11 @@ while true; do
         4) javascript ;;
         9) resetar_url ;;
         00)
-            printf "${YELLOW}Saindo...${RESET}\n"
+            printf "%bSaindo...%b\n" "$YELLOW" "$RESET"
             exit 0
             ;;
         *)
-            printf "${YELLOW}Opção inválida ${CYAN_LIGHT}%s${RESET}\n" "(╯°□°）╯︵┻━┻"
+            printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
             ;;
     esac
 done

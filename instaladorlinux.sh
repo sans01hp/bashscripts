@@ -14,16 +14,16 @@ BLUE_LIGHT="\033[94m"
 PURPLE_LIGHT="\033[95m"
 RESET="\033[0m"
 
-printf "${YELLOW}Esse script foi feito com o propósito de ser usado no Kali para o userland${RESET}\n"
+printf "%bEsse script foi feito com o propósito de ser usado no Kali para o userland%b\n" "$YELLOW" "$RESET"
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
-    printf "${GREEN_BOLD}Você não está usando um sistema GNU/Linux ou similar${RESET}\n"
+    printf "%bVocê não está usando um sistema GNU/Linux ou similar%b\n" "$GREEN_BOLD" "$RESET"
     exit 1
 fi
 
 # Solicita senha sudo uma vez no começo
-printf "${CYAN_BOLD}Verificando permissões de sudo...${RESET}\n"
+printf "%bVerificando permissões de sudo...%b\n" "$CYAN_BOLD" "$RESET"
 sudo -v  # pede a senha do usuário
 
 # Mantém a sessão sudo ativa enquanto o script roda
@@ -35,13 +35,14 @@ sudo -v  # pede a senha do usuário
     done
 ) 2>/dev/null &
 
-printf "${CYAN_BOLD}Vamos começar atualizando o ${GREEN_LIGHT}Linux...${RESET}\n"
+printf "%bVamos começar atualizando o %bLinux...%b\n" "$CYAN_BOLD" "$GREEN_LIGHT" "$RESET"
 sleep 3
 cd
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt autoremove -y
-printf "${CYAN}Instalando linguagens de programação e ferramentas necessárias...${RESET}\n"
+
+printf "%bInstalando linguagens de programação e ferramentas necessárias...%b\n" "$CYAN" "$RESET"
 sleep 3
 
 # Instalando pacotes
@@ -57,21 +58,21 @@ pkg=(
     micro
 )
 
-printf "${CYAN_BOLD}[*] Instalando pacotes...${RESET}\n"
+printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
 for p in "${pkg[@]}"; do
     if command -v "$p" &> /dev/null; then
-        printf "${GREEN_BOLD}[✔] %s já instalado.${RESET}\n" "$p"
+        printf "%b[✔] %s já instalado.%b\n" "$GREEN_BOLD" "$p" "$RESET"
     else
-        printf "${YELLOW}[ * ] Instalando %s...${RESET}\n" "$p"
+        printf "%b[ * ] Instalando %s...%b\n" "$YELLOW" "$p" "$RESET"
         sudo apt install -y "$p"
     fi
 done
 
-printf "${YELLOW_BOLD}Editor ${GREEN_LIGHT}micro ${YELLOW_LIGHT}instalado. Use se precisar de autocomplete para comandos${RESET}\n"
-printf "${CYAN}Configurando Micro para Python LSP...${RESET}\n"
+printf "%bEditor %bmicro %binstalado. Use se precisar de autocomplete para comandos%b\n" "$YELLOW_BOLD" "$GREEN_LIGHT" "$YELLOW" "$RESET"
+printf "%bConfigurando Micro para Python LSP...%b\n" "$CYAN" "$RESET"
 sleep 2
 
-# Instala python-lsp-server via pipx para suporte a LSP
+# Instala python-lsp-server via pipx
 pipx ensurepath
 pipx install 'python-lsp-server[all]'
 
@@ -89,7 +90,7 @@ cat > "$MICRO_CONFIG_DIR/settings.json" <<setup
 }
 setup
 
-printf "${GREEN_BOLD}Micro configurado para suporte a Python LSP${RESET}\n"
+printf "%bMicro configurado para suporte a Python LSP%b\n" "$GREEN_BOLD" "$RESET"
 
 # Instalando ferramentas Go
 declare -A ferramentas=(
@@ -103,10 +104,10 @@ declare -A ferramentas=(
     ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
 )
 
-printf "${CYAN}Instalando ferramentas em Golang...${RESET}\n"
+printf "%bInstalando ferramentas em Golang...%b\n" "$CYAN" "$RESET"
 sleep 2
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "${GREEN}Instalando ${CYAN_LIGHT}%s...${RESET}\n" "${ferramenta}"
+    printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "$ferramenta" "$GREEN" "$RESET"
     sleep 1
     go install -v "${ferramentas[$ferramenta]}"
 done
@@ -123,13 +124,13 @@ declare -A links=(
     ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
 )
 
-printf "${CYAN}Baixando repositórios necessários...${RESET}\n"
+printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
 for repo in "${!links[@]}"; do
     if [ ! -d "$repo" ]; then
-        printf "Clonando %s...\n" "${repo}"
+        printf "Clonando %s...\n" "$repo"
         git clone "${links[$repo]}"
     else
-        printf "${GREEN}Atualizando repositório ${CYAN_LIGHT}%s...${RESET}\n" "${repo}"
+        printf "%bAtualizando repositório %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "$repo" "$GREEN" "$RESET"
         git -C "$repo" reset --hard
         git -C "$repo" pull
     fi
@@ -142,18 +143,18 @@ source "$HOME/piplibs/bin/activate"
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
     if [ -f "$REPO_PATH/setup.py" ] || [ -f "$REPO_PATH/pyproject.toml" ]; then
-        printf "${GREEN_BOLD}Tentando instalar $repo com pip${RESET}\n"
-        pip install "$REPO_PATH" || printf "${RED_BOLD}Falha ao instalar $repo com pip. Instale manualmente se necessário.${RESET}\n"
+        printf "%bTentando instalar %s com pip%b\n" "$GREEN_BOLD" "$repo" "$RESET"
+        pip install "$REPO_PATH" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "$repo" "$RESET"
         if [ -f "$HOME/piplibs/bin/${repo}" ]; then
             sudo ln -sf "$HOME/piplibs/bin/${repo}" /usr/local/bin/${repo}
         fi
     else
-        printf "${YELLOW_BOLD}Repositório $repo não é um pacote Python instalável. Instalação manual será necessária.${RESET}\n"
+        printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "$repo" "$RESET"
     fi
 done
 
 deactivate
-printf "${GREEN_BOLD}Instalação concluída${RESET}\n"
+printf "%bInstalação concluída%b\n" "$GREEN_BOLD" "$RESET"
 sleep 2
 
 # Criando links simbólicos para ferramentas Go
@@ -162,11 +163,11 @@ for go_tool in "$HOME/go/bin/"*; do
     sudo ln -sf "$go_tool" /usr/local/bin/"$tool_name"
 done
 
-printf "${YELLOW}Aviso: ${GREEN}As ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.${RESET}\n"
+printf "%bAviso: %bAs ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.%b\n" "$YELLOW" "$GREEN" "$RESET"
 
 # Exemplos de uso
 printf "\nExemplos de uso das ferramentas instaladas:\n"
-printf "1. subfinder: ${CYAN_LIGHT}subfinder -d alvo${RESET}\n"
-printf "2. ffuf: ${BLUE_LIGHT}ffuf -u alvo/FUZZ -w caminho/da/wordlist${RESET}\n"
-printf "3. nuclei: ${PURPLE_LIGHT}nuclei -u alvo -t nuclei-templates/cves${RESET}\n"
-printf "4. micro: ${GREEN_LIGHT}micro arquivo.py${RESET}\n"
+printf "1. subfinder: %bsubfinder -d alvo%b\n" "$CYAN_LIGHT" "$RESET"
+printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b\n" "$BLUE_LIGHT" "$RESET"
+printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT" "$RESET"
+printf "4. micro: %bmicro arquivo.py%b\n" "$GREEN_LIGHT" "$RESET"
