@@ -16,22 +16,42 @@ RESET="\033[0m"
 # ---------- Funções ----------
 menu() {
     clear
-    printf "%b1-Montar urls%b\n" "$GREEN" "$RESET"
+    printf "%b1-Recon completo (Subfinder + Httpx + Gau)%b\n" "$GREEN" "$RESET"
     printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b\n" "$PURPLE" "$RED" "$RESET"
-    printf "%b3-Subdominios ativos%b\n" "$BLUE" "$RESET"
     printf "%b4-Achar informações no JavaScript%b\n" "$CYAN_LIGHT" "$RESET"
     printf "%b9-Mudar alvo%b\n" "$RED" "$RESET"
     printf "%b00-Sair%b\n" "$YELLOW" "$RESET"
 }
 
-acharurls() {
-    printf "%bMontando urls em%b %s\n" "$GREEN" "$RESET" "$url"
-    printf "%s\n" "$url" | gau
+recon_all() {
+    printf "%b[INFO]%b Rodando Subfinder + Httpx + Gau em: %s\n" "$GREEN" "$RESET" "${url}"
+
+    # Diretório e arquivo de saída
+    output_dir="${HOME}/bashscripts/subd_results"
+    mkdir -p "${output_dir}"
+
+    domain="${url#*://}"    # remove http:// ou https://
+    domain="${domain%%/*}"  # remove caminho
+
+    output_file="${output_dir}/${domain}.txt"
+
+    printf "%b[INFO]%b Salvando resultados em: %s\n" "$CYAN_LIGHT" "$RESET" "${output_file}"
+
+    # Pipeline principal
+    subfinder -d "${domain}" -silent \
+        | httpx -silent \
+        | gau -silent > "${output_file}"
+
+    if [[ $? -eq 0 ]]; then
+        printf "%b[OK]%b Recon concluído. Arquivo: %s\n" "$GREEN" "$RESET" "${output_file}"
+    else
+        printf "%b[ERRO]%b Falha durante o recon para %s\n" "$RED" "$RESET" "${url}"
+    fi
 }
 
 javascript() {
-    printf "Coletando informações no JavaScript...\n"
-    printf "%s\n" "$url" | getJS
+    printf "%b[INFO]%b Coletando informações no JavaScript...\n" "$GREEN" "$RESET"
+    printf "%s\n" "${url}" | getJS
 }
 
 nuclei() {
@@ -46,43 +66,35 @@ nuclei() {
     read -r template
 
     case $template in
-        1) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates ;;
-        2) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/exposures ;;
-        3) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/cves ;;
-        4) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/exposed-panels ;;
-        5) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/fuzzing ;;
-        6) $HOME/go/bin/nuclei -u "$url" -t $HOME/nuclei-templates/vulnerabilities ;;
+        1) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates ;;
+        2) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/exposures ;;
+        3) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/cves ;;
+        4) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/exposed-panels ;;
+        5) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/fuzzing ;;
+        6) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/vulnerabilities ;;
         *)
             printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
             return ;;
     esac
 }
 
-subd() {
-    domain=${url#*://}   # remove http:// ou https://
-    domain=${domain%%/*} # remove tudo depois da primeira "/"
-    subfinder -d "$domain" | httpx -sc -title
-}
-
 resetar_url() {
     printf "%bDigite o %bDominio/Url %bque deseja analisar:%b\n" "$YELLOW" "$CYAN_LIGHT" "$YELLOW" "$RESET"
     read -r url
 
-    if [[ -z "$url" ]]; then
+    if [[ -z "${url}" ]]; then
         printf "%b[ERRO]%b URL vazia.%b\n" "$RED" "$YELLOW" "$RESET"
         return 1
     fi
 
-    # Adiciona https:// se não estiver presente
-    if [[ "$url" != https://* ]]; then
-        url="https://$url"
+    if [[ "${url}" != https://* ]]; then
+        url="https://${url}"
     fi
 
-    # Validação de domínio/subdomínio com suporte a TLDs internacionais e caminhos
-    if [[ "$url" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-        printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "$url" "$RESET"
+    if [[ "${url}" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
+        printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
     else
-        printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "$url" "$RESET"
+        printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
         return 2
     fi
 }
@@ -96,16 +108,14 @@ fi
 
 url="$1"
 
-# Adiciona https:// se não estiver presente
-if [[ "$url" != https://* ]]; then
-    url="https://$url"
+if [[ "${url}" != https://* ]]; then
+    url="https://${url}"
 fi
 
-# Validação inicial
-if [[ "$url" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-    printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "$url" "$RESET"
+if [[ "${url}" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
+    printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
 else
-    printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "$url" "$RESET"
+    printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
     exit 2
 fi
 
@@ -114,9 +124,8 @@ while true; do
     menu
     read -r opcao
     case $opcao in
-        1) acharurls ;;
+        1) recon_all ;;
         2) nuclei ;;
-        3) subd ;;
         4) javascript ;;
         9) resetar_url ;;
         00)

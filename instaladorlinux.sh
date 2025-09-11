@@ -14,7 +14,7 @@ BLUE_LIGHT="\033[94m"
 PURPLE_LIGHT="\033[95m"
 RESET="\033[0m"
 
-printf "%bEsse script foi feito com o propósito de ser usado no Kali para o userland%b\n" "$YELLOW" "$RESET"
+printf "%bEsse script foi feito com o propósito de ser usado no Kali para o Userland%b\n" "$YELLOW" "$RESET"
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
@@ -24,9 +24,7 @@ fi
 
 # Solicita senha sudo uma vez no começo
 printf "%bVerificando permissões de sudo...%b\n" "$CYAN_BOLD" "$RESET"
-sudo -v  # pede a senha do usuário
-
-# Mantém a sessão sudo ativa enquanto o script roda
+sudo -v
 (
     while true; do
         sudo -n true
@@ -35,6 +33,7 @@ sudo -v  # pede a senha do usuário
     done
 ) 2>/dev/null &
 
+# ---------- Atualização do sistema ----------
 printf "%bVamos começar atualizando o %bLinux...%b\n" "$CYAN_BOLD" "$GREEN_LIGHT" "$RESET"
 sleep 3
 cd
@@ -42,14 +41,15 @@ sudo apt update -y
 sudo apt upgrade -y
 sudo apt autoremove -y
 
+# ---------- Instalação de pacotes ----------
 printf "%bInstalando linguagens de programação e ferramentas necessárias...%b\n" "$CYAN" "$RESET"
 sleep 3
 
-# Instalando pacotes
 pkg=(
     python3
     golang
     curl
+    unzip
     wget
     iputils-ping
     openssh-client
@@ -60,11 +60,11 @@ pkg=(
 
 printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
 for p in "${pkg[@]}"; do
-    if command -v "$p" &> /dev/null; then
+    if command -v "${p}" &> /dev/null; then
         printf "%b[✔] %s já instalado.%b\n" "$GREEN_BOLD" "$p" "$RESET"
     else
         printf "%b[ * ] Instalando %s...%b\n" "$YELLOW" "$p" "$RESET"
-        sudo apt install -y "$p"
+        sudo apt install -y "${p}"
     fi
 done
 
@@ -76,10 +76,9 @@ sleep 2
 pipx ensurepath
 pipx install 'python-lsp-server[all]'
 
-# Criar diretório de configuração do micro e habilitar plugin LSP
-MICRO_CONFIG_DIR="$HOME/.config/micro"
-mkdir -p "$MICRO_CONFIG_DIR"
-cat > "$MICRO_CONFIG_DIR/settings.json" <<setup
+MICRO_CONFIG_DIR="${HOME}/.config/micro"
+mkdir -p "${MICRO_CONFIG_DIR}"
+cat > "${MICRO_CONFIG_DIR}/settings.json" <<setup
 {
     "plugin": ["lsp"],
     "lspservers": {
@@ -92,7 +91,7 @@ setup
 
 printf "%bMicro configurado para suporte a Python LSP%b\n" "$GREEN_BOLD" "$RESET"
 
-# Instalando ferramentas Go
+# ---------- Instalando ferramentas Go ----------
 declare -A ferramentas=(
     ["kxss"]="github.com/Emoe/kxss@latest"
     ["subfinder"]="github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
@@ -107,12 +106,12 @@ declare -A ferramentas=(
 printf "%bInstalando ferramentas em Golang...%b\n" "$CYAN" "$RESET"
 sleep 2
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "$ferramenta" "$GREEN" "$RESET"
+    printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
     sleep 1
-    go install -v "${ferramentas[$ferramenta]}"
+    go install -v "${ferramentas[${ferramenta}]}"
 done
 
-# Clonando repositórios
+# ---------- Clonando repositórios ----------
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
     ["sherlock"]="https://github.com/sherlock-project/sherlock"
@@ -126,48 +125,61 @@ declare -A links=(
 
 printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
 for repo in "${!links[@]}"; do
-    if [ ! -d "$repo" ]; then
-        printf "Clonando %s...\n" "$repo"
-        git clone "${links[$repo]}"
+    if [ ! -d "${repo}" ]; then
+        printf "%bClonando %s...%b\n" "$CYAN_LIGHT" "${repo}" "$RESET"
+        git clone "${links[${repo}]}"
     else
-        printf "%bAtualizando repositório %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "$repo" "$GREEN" "$RESET"
-        git -C "$repo" reset --hard
-        git -C "$repo" pull
+        printf "%bAtualizando repositório %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${repo}" "$GREEN" "$RESET"
+        git -C "${repo}" reset --hard
+        git -C "${repo}" pull
     fi
 done
 
-# Criando ambiente virtual e instalando pacotes Python
-python3 -m venv "$HOME/piplibs"
-source "$HOME/piplibs/bin/activate"
+# ---------- Ambiente virtual Python ----------
+python3 -m venv "${HOME}/piplibs"
+source "${HOME}/piplibs/bin/activate"
 
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
-    if [ -f "$REPO_PATH/setup.py" ] || [ -f "$REPO_PATH/pyproject.toml" ]; then
-        printf "%bTentando instalar %s com pip%b\n" "$GREEN_BOLD" "$repo" "$RESET"
-        pip install "$REPO_PATH" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "$repo" "$RESET"
-        if [ -f "$HOME/piplibs/bin/${repo}" ]; then
-            sudo ln -sf "$HOME/piplibs/bin/${repo}" /usr/local/bin/${repo}
+    if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then
+        printf "%bTentando instalar %s com pip%b\n" "$GREEN_BOLD" "${repo}" "$RESET"
+        pip install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "${repo}" "$RESET"
+        if [ -f "${HOME}/piplibs/bin/${repo}" ]; then
+            sudo ln -sf "${HOME}/piplibs/bin/${repo}" /usr/local/bin/"${repo}"
         fi
     else
-        printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "$repo" "$RESET"
+        printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "${repo}" "$RESET"
     fi
 done
 
 deactivate
-printf "%bInstalação concluída%b\n" "$GREEN_BOLD" "$RESET"
-sleep 2
 
-# Criando links simbólicos para ferramentas Go
-for go_tool in "$HOME/go/bin/"*; do
-    tool_name=$(basename "$go_tool")
-    sudo ln -sf "$go_tool" /usr/local/bin/"$tool_name"
+# ---------- Bloco de instalação do Aquatone ----------
+if [ -d "${HOME}/aquatone" ] && [ -f "${HOME}/aquatone/aquatone" ]; then
+    printf "%bAquatone já está instalado em %s%b\n" "$GREEN_BOLD" "${HOME}/aquatone" "$RESET"
+else
+    {
+        mkdir -p "${HOME}/aquatone"
+        cd "${HOME}/aquatone" || exit
+        wget https://github.com/michenriksen/aquatone/releases/download/v1.7.0/aquatone_linux_amd64_1.7.0.zip
+        unzip aquatone_linux_amd64_1.7.0.zip
+        chmod +x aquatone
+        printf "%bAquatone instalado com sucesso%b\n" "$GREEN_BOLD" "$RESET"
+    }
+fi
+
+# ---------- Links simbólicos para Go ----------
+for go_tool in "${HOME}/go/bin/"*; do
+    tool_name=$(basename "${go_tool}")
+    sudo ln -sf "${go_tool}" /usr/local/bin/"${tool_name}"
 done
 
 printf "%bAviso: %bAs ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.%b\n" "$YELLOW" "$GREEN" "$RESET"
+printf "%bInstalação concluída%b\n" "$GREEN_BOLD" "$RESET"
+sleep 2
 
-# Exemplos de uso
-printf "\nExemplos de uso das ferramentas instaladas:\n"
+# ---------- Exemplos de uso ----------
+printf "\n%bExemplos de uso das ferramentas instaladas:%b\n" "$CYAN_BOLD" "$RESET"
 printf "1. subfinder: %bsubfinder -d alvo%b\n" "$CYAN_LIGHT" "$RESET"
 printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b\n" "$BLUE_LIGHT" "$RESET"
-printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT" "$RESET"
-printf "4. micro: %bmicro arquivo.py%b\n" "$GREEN_LIGHT" "$RESET"
+printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT"
