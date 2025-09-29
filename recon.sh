@@ -26,27 +26,32 @@ menu() {
 recon_all() {
     printf "%b[INFO]%b Rodando Subfinder + Httpx + Gau em: %s\n" "$GREEN" "$RESET" "${url}"
 
-    # Diretório e arquivo de saída
     output_dir="${HOME}/bashscripts/subd_results"
-    mkdir -p "${output_dir}"
+    mkdir -p "$output_dir"
 
     domain="${url#*://}"    # remove http:// ou https://
-    domain="${domain%%/*}"  # remove caminho
+    domain="${domain%%/*}"  # remove caminho/paths
 
-    output_file="${output_dir}/${domain}.txt"
+    out_file="${output_dir}/${domain}.txt"
 
-    printf "%b[INFO]%b Salvando resultados em: %s\n" "$CYAN_LIGHT" "$RESET" "${output_file}"
+    printf "%b[INFO]%b Salvando resultados em: %s\n" "$CYAN_LIGHT" "$RESET" "$out_file"
 
-    # Pipeline principal (verifique se subfinder/httpx/gau estão no PATH)
-    if subfinder -d "${domain}" -silent \
-        | httpx -silent \
-        | gau > "${output_file}"; then
-        printf "%b[OK]%b Recon concluído. Arquivo: %s\n" "$GREEN" "$RESET" "${output_file}"
+    # pipeline simples, resultado mostrado e salvo com tee
+    subfinder -d "$domain" -silent \
+      | httpx -silent \
+      | gau \
+      | tee "$out_file"
+
+    status=$?
+
+    if [[ $status -eq 0 ]]; then
+        printf "%b[OK]%b Recon concluído. Arquivo: %s\n" "$GREEN" "$RESET" "$out_file"
+        return 0
     else
-        printf "%b[ERRO]%b Falha durante o recon para %s\n" "$RED" "$RESET" "${url}"
+        printf "%b[ERRO]%b Falha durante o recon para %s (status %d)\n" "$RED" "$RESET" "${url}" "$status"
+        return $status
     fi
 }
-
 javascript() {
     printf "%b[INFO]%b Coletando informações no JavaScript...\n" "$GREEN" "$RESET"
     printf "%s\n" "${url}" | getJS
@@ -124,7 +129,7 @@ while getopts "u:o:h" flag; do
               exit 2
           fi
           ;;
-       ?) 
+       ?)
           echo "Opção inválida. Use -h para ajuda."
           exit 1
           ;;
@@ -139,7 +144,7 @@ fi
 # ---------- Loop principal ----------
 while true; do
     menu
-    read -r opcao
+    read -r -p "Escolha um número/opção: " opcao
     case "$opcao" in
         1) recon_all ;;
         2) nuclei ;;
