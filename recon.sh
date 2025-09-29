@@ -40,7 +40,7 @@ recon_all() {
     # Pipeline principal (verifique se subfinder/httpx/gau estão no PATH)
     if subfinder -d "${domain}" -silent \
         | httpx -silent \
-        | gau -silent > "${output_file}"; then
+        | gau > "${output_file}"; then
         printf "%b[OK]%b Recon concluído. Arquivo: %s\n" "$GREEN" "$RESET" "${output_file}"
     else
         printf "%b[ERRO]%b Falha durante o recon para %s\n" "$RED" "$RESET" "${url}"
