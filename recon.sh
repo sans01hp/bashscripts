@@ -37,12 +37,10 @@ recon_all() {
 
     printf "%b[INFO]%b Salvando resultados em: %s\n" "$CYAN_LIGHT" "$RESET" "${output_file}"
 
-    # Pipeline principal
-    subfinder -d "${domain}" -silent \
+    # Pipeline principal (verifique se subfinder/httpx/gau estão no PATH)
+    if subfinder -d "${domain}" -silent \
         | httpx -silent \
-        | gau -silent > "${output_file}"
-
-    if [[ $? -eq 0 ]]; then
+        | gau -silent > "${output_file}"; then
         printf "%b[OK]%b Recon concluído. Arquivo: %s\n" "$GREEN" "$RESET" "${output_file}"
     else
         printf "%b[ERRO]%b Falha durante o recon para %s\n" "$RED" "$RESET" "${url}"
@@ -55,23 +53,23 @@ javascript() {
 }
 
 nuclei() {
-    printf "%bQuais templates quer usar?%b\n" "$YELLOW" "$GREEN"
+    printf "%bQuais templates quer usar?%b\n" "$YELLOW" "$RESET"
     printf "1-todos\n"
     printf "2-exposures\n"
     printf "3-cves\n"
     printf "4-exposed panels\n"
     printf "5-fuzzing\n"
-    printf "6-vulnerabilities%b\n" "$RESET"
+    printf "6-vulnerabilities\n"
 
     read -r template
 
-    case $template in
-        1) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates ;;
-        2) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/exposures ;;
-        3) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/cves ;;
-        4) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/exposed-panels ;;
-        5) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/fuzzing ;;
-        6) $HOME/go/bin/nuclei -u "${url}" -t $HOME/nuclei-templates/vulnerabilities ;;
+    case "$template" in
+        1) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates" ;;
+        2) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/exposures" ;;
+        3) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/cves" ;;
+        4) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/exposed-panels" ;;
+        5) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/fuzzing" ;;
+        6) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/vulnerabilities" ;;
         *)
             printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
             return ;;
@@ -87,12 +85,14 @@ resetar_url() {
         return 1
     fi
 
-    if [[ "${url}" != https://* ]]; then
+    if [[ "${url}" != https://* && "${url}" != http://* ]]; then
         url="https://${url}"
     fi
 
-    if [[ "${url}" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
+    # regex simplificado e portátil
+    if [[ "${url}" =~ ^https?://([A-Za-z0-9.-]+\.[A-Za-z]{2,})(/.*)?$ ]]; then
         printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
+        return 0
     else
         printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
         return 2
@@ -100,30 +100,47 @@ resetar_url() {
 }
 
 # ---------- Entrada inicial ----------
-if [[ -z "$1" ]]; then
-    printf "%b[ERRO]%b Você precisa passar uma URL como argumento.%b\n" "$RED" "$YELLOW" "$RESET"
-    printf "Uso: %s <dominio ou url>\n" "$0"
-    exit 1
-fi
+output=""
+url=""
 
-url="$1"
+while getopts "u:o:h" flag; do
+    case "$flag" in
+       h)
+          echo "Forma de uso: $0 -u <url> -o <nome_do_arquivo_de_saida.txt> (opcional)"
+          echo "-u      define a url inicial (ex: -u exemplo.com ou -u https://exemplo.com)"
+          echo "-h      mostra esse texto"
+          echo "-o      output para fuzzing (ex: -o resultado.txt)"
+          exit 0
+          ;;
+       o) output=$OPTARG ;;
+       u)
+          url=$OPTARG
+          # normalize
+          if [[ "${url}" != https://* && "${url}" != http://* ]]; then
+              url="https://${url}"
+          fi
+          if ! [[ "${url}" =~ ^https?://([A-Za-z0-9.-]+\.[A-Za-z]{2,})(/.*)?$ ]]; then
+              printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
+              exit 2
+          fi
+          ;;
+       ?) 
+          echo "Opção inválida. Use -h para ajuda."
+          exit 1
+          ;;
+    esac
+done
 
-if [[ "${url}" != https://* ]]; then
-    url="https://${url}"
-fi
-
-if [[ "${url}" =~ ^https://(([a-zA-Z0-9\u00a1-\uffff-]+\.)+[a-zA-Z\u00a1-\uffff]{2,})(/.*)?$ ]]; then
-    printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
-else
-    printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
-    exit 2
+# Se não passou -u, pede interativamente antes de continuar
+if [[ -z "${url}" ]]; then
+    resetar_url || exit 1
 fi
 
 # ---------- Loop principal ----------
 while true; do
     menu
     read -r opcao
-    case $opcao in
+    case "$opcao" in
         1) recon_all ;;
         2) nuclei ;;
         4) javascript ;;
