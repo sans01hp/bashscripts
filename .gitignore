@@ -1,0 +1,51 @@
+# ========================================
+# Ignorar arquivos de ambiente
+# ========================================
+.env              # Arquivo com variáveis sensíveis
+*.env             # Outros arquivos .env (ex: prod.env, dev.env, pass.env)
+
+# ========================================
+# Ignorar logs
+# ========================================
+*.log             # Qualquer arquivo .log em qualquer lugar
+logs/             # Pasta de logs, se existir
+
+# ========================================
+# Ignorar diretórios de dependências
+# ========================================
+node_modules/     # Pasta padrão de projetos Node.js
+
+# ========================================
+# Ignorar arquivos Python gerados
+# ========================================
+__pycache__/      # Cache Python
+*.pyc             # Arquivos bytecode Python
+
+# ========================================
+# Ignorar backups ou arquivos temporários
+# ========================================
+*.tmp
+*.swp             # Arquivos de swap do Vim
+*.bak             # Backups de editores
+
+# ========================================
+# Ignorar chaves SSH ou arquivos secretos extras
+# ========================================
+*.pem
+*.key
+secrets.txt
+bashscripts/subd_results/
+*.backup
+
+# ========================================
+# Ignorar arquivos de build (ex: Docker)
+# ========================================
+dist/
+build/
+
+# ========================================
+# Ignorar configurações locais de IDEs
+# ========================================
+.vscode/
+.idea/
+*.code-workspace

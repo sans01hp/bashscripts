@@ -15,7 +15,6 @@ RESET="\033[0m"
 
 # ---------- Funções ----------
 menu() {
-    clear
     printf "%b1-Recon completo (Subfinder + Httpx + Gau)%b\n" "$GREEN" "$RESET"
     printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b\n" "$PURPLE" "$RED" "$RESET"
     printf "%b4-Achar informações no JavaScript%b\n" "$CYAN_LIGHT" "$RESET"
@@ -136,15 +135,17 @@ while getopts "u:o:h" flag; do
     esac
 done
 
-# Se não passou -u, pede interativamente antes de continuar
+# verifica se a variavel está vazia
 if [[ -z "${url}" ]]; then
-    resetar_url || exit 1
-fi
-
+    printf "%bA flag -u não pode ser vazia%b\n" "${YELLOW}" "${RESET}"
+	printf "%bUse $0 -u <url ou dominio>%b" "${GREEN}" "${RESET}"
+	exit 1 
+fi	
 # ---------- Loop principal ----------
 while true; do
     menu
-    read -r -p "Escolha um número/opção: " opcao
+    printf "%bDigite o numero da opção que você quer%b:" "${GREEN}" "${RESET}"
+    read -r  opcao
     case "$opcao" in
         1) recon_all ;;
         2) nuclei ;;
