@@ -34,7 +34,7 @@ __pycache__/      # Cache Python
 *.pem
 *.key
 secrets.txt
-bashscripts/subd_results/
+subd_results
 *.backup
 
 # ========================================
