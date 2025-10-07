@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
-set -o nounset
-# set -o para parar em caso de Falha
 
 # Definição das cores ANSI
 YELLOW="\033[1;93m"
@@ -58,11 +55,9 @@ pkg=(
     openssh-client
     cargo
     pipx
-    micro
     neovim
     nodejs
     npm
-    git
 )
 
 printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
@@ -75,28 +70,9 @@ for p in "${pkg[@]}"; do
     fi
 done
 
-printf "%bEditor %bmicro %binstalado. Use se precisar de autocomplete para comandos%b\n" "$YELLOW_BOLD" "$GREEN_LIGHT" "$YELLOW" "$RESET"
-printf "%bConfigurando Micro para Python LSP...%b\n" "$CYAN" "$RESET"
-sleep 1
-
 # Instala python-lsp-server via pipx 
 pipx ensurepath
 pipx install 'python-lsp-server[all]' || printf "%bAviso: pipx install pylsp falhou%b\n" "$YELLOW" "$RESET"
-
-MICRO_CONFIG_DIR="${HOME}/.config/micro"
-mkdir -p "${MICRO_CONFIG_DIR}"
-cat > "${MICRO_CONFIG_DIR}/settings.json" <<'JSON'
-{
-    "plugin": ["lsp"],
-    "lspservers": {
-        "python": {
-            "command": "pylsp"
-        }
-    }
-}
-JSON
-
-printf "%bMicro configurado para suporte a Python LSP%b\n" "$GREEN_BOLD" "$RESET"
 
 # instalar e configurar Neovim em ~/.config/nvim/init.lua
 set -o pipefail
@@ -244,7 +220,8 @@ sleep 1
 for ferramenta in "${!ferramentas[@]}"; do
     printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
     sleep 1
-    go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${ferramenta}" "$RESET"
+    # garantir go bin no PATH para installs e uso imediato
+    env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${ferramenta}" "$RESET"
 done
 
 # ---------- Clonando repositórios ----------
