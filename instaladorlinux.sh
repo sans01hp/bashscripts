@@ -193,7 +193,7 @@ GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha ins
 sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b\n" "$YELLOW" "$RESET"
 
 # -------- Lazy sync plugins (assegurar que nvim veja o piplibs) --------
-env PATH="${PIPLIBS}/bin:${PATH}" nvim --headless "+Lazy sync" +qa || printf "%bLazy sync falhou — abra o nvim e rode :Lazy sync%b\n" "$YELLOW" "$RESET"
+env PATH="${HOME}/go/bin:${PIPLIBS}/bin:${PATH}" nvim --headless "+Lazy sync" +qa || printf "%bLazy sync falhou — abra o nvim e rode :Lazy sync%b\n" "$YELLOW" "$RESET"
 
 # -------- Mensagem final parcial --------
 printf "%b[✔] Instalação do Neovim concluída!%b\n" "$GREEN_BOLD" "$RESET"
