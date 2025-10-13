@@ -24,14 +24,15 @@ menu() {
 
 recon_all() {
 	printf "%b[INFO]%b Rodando Subfinder + Httpx + Gau em: %s\n" "$GREEN" "$RESET" "${url}"
-
-	output_dir="${HOME}/bashscripts/subd_results"
-	mkdir -p "$output_dir"
+    out_file="${HOME}/bashscripts/"
+	gau_dir="${HOME}/bashscripts/gau_results"
+	subfinder_dir="${HOME}/bashscripts/subfinder_results"
 
 	domain="${url#*://}"    # remove http:// ou https://
 	domain="${domain%%/*}"  # remove caminho/paths
 
-	out_file="${output_dir}/${domain}.txt"
+	gau_output="${gau_dir}/${domain}.txt"  
+    subfinder_output="${subfinder_dir}/${domain}.txt"
 
 	printf "%b[INFO]%b Salvando resultados em: %s\n" "$CYAN_LIGHT" "$RESET" "$out_file"
 	# pipefail para capturar erros na execução
@@ -39,9 +40,10 @@ recon_all() {
 
 	# pipeline simples, resultado mostrado e salvo com tee
 	subfinder -d "$domain" -silent \
+        | tee "$subfinder_output"
 		| httpx -silent \
 		| gau \
-		| tee "$out_file"
+		| tee "$gau_output"
 
 	status=$?
 	# desativando o pipefail para não continuar no resto do script
@@ -112,16 +114,14 @@ resetar_url() {
 output=""
 url=""
 
-while getopts "u:o:h" flag; do
+while getopts "u:h" flag; do
 	case "$flag" in
 		h)
-			echo "Forma de uso: $0 -u <url> -o <nome_do_arquivo_de_saida.txt> (opcional)"
+			echo "Forma de uso: $0 -u <url>"
 			echo "-u      define a url inicial (ex: -u exemplo.com ou -u https://exemplo.com)"
 			echo "-h      mostra esse texto"
-			echo "-o      output para fuzzing (ex: -o resultado.txt)"
 			exit 0
 			;;
-		o) output=$OPTARG ;;
 		u)
 			url=$OPTARG
 			# normalize
@@ -142,15 +142,15 @@ done
 
 # verifica se a variavel está vazia
 if [[ -z "${url}" ]]; then
-	printf "%bA flag -u não pode ser vazia%b\n" "${YELLOW}" "${RESET}"
-	printf "%bUse $0 -u <url ou dominio>%b" "${GREEN}" "${RESET}"
+	printf "%bA flag -u não pode ser vazia%b\n" "$YELLOW" "$RESET"
+	printf "%bUse $0 -u <url ou dominio>%b" "$GREEN" "$RESET"
 	exit 1
 fi
 
 # ---------- Loop principal ----------
 while true; do
 	menu
-	printf "%bDigite o numero da opção que você quer%b:" "${GREEN}" "${RESET}"
+	printf "%bDigite o numero da opção que você quer%b:" "$GREEN" "$RESET"
 	read -r opcao
 	case "$opcao" in
 		1) recon_all ;;

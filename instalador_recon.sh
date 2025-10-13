@@ -55,9 +55,11 @@ pkg=(
     openssh-client
     cargo
     pipx
+    zsh 
     neovim
     nodejs
     npm
+    nmap 
 )
 
 printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
@@ -70,11 +72,8 @@ for p in "${pkg[@]}"; do
     fi
 done
 
-# Instala python-lsp-server via pipx 
-pipx ensurepath
-pipx install 'python-lsp-server[all]' || printf "%bAviso: pipx install pylsp falhou%b\n" "$YELLOW" "$RESET"
-
-# instalar e configurar Neovim em ~/.config/nvim/init.lua
+# Instalar e configurar Neovim em ~/.config/nvim/init.lua
+# Ativar o pipefail para capturar erros na pipeline
 set -o pipefail
 
 # -------- Diretórios --------
@@ -171,24 +170,37 @@ end
 vim.api.nvim_set_keymap("n", "<C-n>", [[:lua ToggleNumbers()<CR>]], { noremap = true, silent = true })
 EOF
 
-# -------- Criando ambiente isolado para pacotes python em $HOME/piplibs/ --------
+# -------- Criando ambiente isolado para pacotes python em $HOME/piplibs/ -------
+
+# ------- Path para o venv -------
 PIPLIBS="${HOME}/piplibs"
+python3 -m venv "${PIPLIBS}"
+
+# ------ Path para atualizaçãode livrarias pip ------
 PYBIN="${PIPLIBS}/bin/python"
 PIPBIN="${PIPLIBS}/bin/pip"
 
-python3 -m venv "${PIPLIBS}"
-# ativa o env dentro do script para instalar e para o nvim headless
+# Cria um alias permanente para ativar o venv rapidamente
+if ! grep -Fq "alias venv='source ~/piplibs/bin/activate'" "${HOME}/.zshrc"; then
+    printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "${HOME}/.zshrc"
+    printf "%b[✔]%b Alias 'venv' adicionado ao .zshrc\n" "$GREEN_BOLD" "$RESET"
+else
+    printf "%b[=]%b Alias 'venv' já existe no .zshrc\n" "$YELLOW_BOLD" "$RESET"
+fi
+printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Após ativar, o Neovim funcionará com todos os LSPs e plugins corretamente.\n" "$CYAN_BOLD" "$RESET"
+# Ativa o env dentro do script para instalar e para o nvim headless
 source "${PIPLIBS}/bin/activate"
 
-# upgrade pip/setuptools/wheel dentro do venv (opcional, recomendado)
+# Upgrade pip/setuptools/wheel dentro do venv (opcional, recomendado)
 "${PIPBIN}" install --upgrade pip setuptools wheel
 
-# instalar pynvim e pylsp no venv
+# Instalar pynvim e pylsp no venv
 if ! "${PIPBIN}" install pynvim "python-lsp-server[all]"; then
     printf "%bFalha instalando pynvim/pylsp no venv%b\n" "$YELLOW" "$RESET"
 fi
 
-# instalar gopls e bash-language-server (gopls via go install; bash-language-server via npm)
+# Instalar gopls e bash-language-server (gopls via go install; bash-language-server via npm)
 GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha instalando gopls%b\n" "$YELLOW" "$RESET"
 sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b\n" "$YELLOW" "$RESET"
 
@@ -197,9 +209,9 @@ env PATH="${HOME}/go/bin:${PIPLIBS}/bin:${PATH}" nvim --headless "+Lazy sync" +q
 
 # -------- Mensagem final parcial --------
 printf "%b[✔] Instalação do Neovim concluída!%b\n" "$GREEN_BOLD" "$RESET"
-printf "%bIMPORTANTE:%b Para usar o Neovim com os LSPs, ative o venv:%b\n  %ssource ~/piplibs/bin/activate%s\n" "$YELLOW" "$RESET" "$CYAN" "$RESET"
+printf "%bIMPORTANTE:%b Para usar o Neovim com os LSPs, ative o venv:%b\n  %bsource ~/piplibs/bin/activate%b\n" "$YELLOW" "$RESET" "$CYAN" "$RESET"
 
-# desativar pipefail local
+# Desativar pipefail local
 set +o pipefail
 
 # ---------- Instalando ferramentas Go ----------
@@ -212,7 +224,6 @@ declare -A ferramentas=(
     ["ffuf"]="github.com/ffuf/ffuf@latest"
     ["getJS"]="github.com/003random/getJS@latest"
     ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
-    ["aquatone"]="github.com/michenriksen/aquatone@latest"
 )
 
 printf "%bInstalando ferramentas em Golang...%b\n" "$CYAN" "$RESET"
@@ -220,8 +231,31 @@ sleep 1
 for ferramenta in "${!ferramentas[@]}"; do
     printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
     sleep 1
-    # garantir go bin no PATH para installs e uso imediato
+    # Garantir go bin no PATH para installs e uso imediato
     env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${ferramenta}" "$RESET"
+done
+
+# ---------- Instalação manual do Aquatone
+git clone https://github.com/shelld3v/aquatone.git
+(cd aquatone && go build -o "${HOME}/go/bin/aquatone")
+
+# ---------- Criando Pastas de Output -----------
+bashscriptsoutdirs=(
+    subfinder_results
+    gau_results
+    nmap_results
+)
+
+printf "%bCriando Pastas de Output em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${HOME}/bashscripts" "$RESET"
+
+for dir in "${bashscriptsoutdirs[@]}"; do
+    outputdir="${HOME}/bashscripts/${dir}"
+    if [[ ! -d "${outputdir}" ]]; then
+        mkdir -p "${outputdir}"
+        printf "%b[✔]%b Criado: %s\n" "$GREEN_BOLD" "$RESET" "${outputdir}"
+    else
+        printf "%b[=]%b O diretório já existe: %s\n" "$YELLOW_BOLD" "$RESET" "${outputdir}"
+    fi
 done
 
 # ---------- Clonando repositórios ----------
@@ -254,7 +288,7 @@ for repo in "${!links[@]}"; do
     if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then
         printf "%bTentando instalar %s com pip (no piplibs)%b\n" "$GREEN_BOLD" "${repo}" "$RESET"
         "${PIPBIN}" install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "${repo}" "$RESET"
-        # linkar executáveis caso tenham sido instalados no piplibs/bin
+        # Linkar executáveis caso tenham sido instalados no piplibs/bin
         if [ -f "${PIPLIBS}/bin/${repo}" ]; then
             sudo ln -sf "${PIPLIBS}/bin/${repo}" /usr/local/bin/"${repo}"
         fi
@@ -266,18 +300,18 @@ done
 # ---------- Ambiente virtual do projeto codigos_para_aprendizado ----------
 path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
-    printf "%bCriando ambiente virtual em %b%s%b\n" "${YELLOW_BOLD}" "${GREEN_BOLD}" "${path4env}" "${RESET}"
+    printf "%bCriando ambiente virtual em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
     python3 -m venv "${path4env}/libs"
-    # ativar apenas para instalar as dependências do projeto
+    # Ativar apenas para instalar as dependências do projeto (acaba o source ao fim do script 
     source "${path4env}/libs/bin/activate"
     python -m pip install --upgrade pip setuptools wheel
     if python -m pip install -r "${path4env}/requirements.txt"; then
-        printf "%bSucesso ao instalar livrarias%b\n" "${GREEN_BOLD}" "${RESET}"
+        printf "%bSucesso ao instalar livrarias%b\n" "$GREEN_BOLD" "$RESET"
     else
-        printf "%bFalha na instalação de livrarias (verifique logs)%b\n" "${RED_BOLD}" "${RESET}"
+        printf "%bFalha na instalação de livrarias (verifique logs)%b\n" "$RED_BOLD" "$RESET"
     fi
 else
-    printf "%b[AVISO]%bO PATH %s não foi encontrado.\n" "${YELLOW_BOLD}" "${RESET}" "${path4env}"
+    printf "%b[AVISO]%bO PATH %s não foi encontrado.\n" "$YELLOW_BOLD" "$RESET" "${path4env}"
 fi
 
 # ---------- Links simbólicos para Go ----------
@@ -297,3 +331,5 @@ printf "\n%bExemplos de uso das ferramentas instaladas:%b\n" "$CYAN_BOLD" "$RESE
 printf "1. subfinder: %bsubfinder -d alvo%b\n" "$CYAN_LIGHT" "$RESET"
 printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b\n" "$BLUE_LIGHT" "$RESET"
 printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT" "$RESET"
+printf "4. script de recon: %b./recon.sh -u alvo%b\n" "$GREEN_BOLD" "$RESET"
+

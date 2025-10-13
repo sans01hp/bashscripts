@@ -34,8 +34,8 @@ __pycache__/      # Cache Python
 *.pem
 *.key
 secrets.txt
-subd_results
-*.backup
+*_results/
+*.backup/
 
 # ========================================
 # Ignorar arquivos de build (ex: Docker)
