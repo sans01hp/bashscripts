@@ -59,7 +59,8 @@ pkg=(
     neovim
     nodejs
     npm
-    nmap 
+    nmap
+    htop   
 )
 
 printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
@@ -181,7 +182,7 @@ PYBIN="${PIPLIBS}/bin/python"
 PIPBIN="${PIPLIBS}/bin/pip"
 
 # Cria um alias permanente para ativar o venv rapidamente
-if ! grep -Fq "alias venv='source ~/piplibs/bin/activate'" "${HOME}/.zshrc"; then
+if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "${HOME}/.zshrc"; then
     printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "${HOME}/.zshrc"
     printf "%b[✔]%b Alias 'venv' adicionado ao .zshrc\n" "$GREEN_BOLD" "$RESET"
 else
