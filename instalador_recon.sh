@@ -225,6 +225,7 @@ declare -A ferramentas=(
     ["ffuf"]="github.com/ffuf/ffuf@latest"
     ["getJS"]="github.com/003random/getJS@latest"
     ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
+    ["gobuster"]="github.com/OJ/gobuster/v3@latest"
 )
 
 printf "%bInstalando ferramentas em Golang...%b\n" "$CYAN" "$RESET"
@@ -245,6 +246,8 @@ bashscriptsoutdirs=(
     subfinder_results
     gau_results
     nmap_results
+    gobuster_results
+    ffuf_results
 )
 
 printf "%bCriando Pastas de Output em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${HOME}/bashscripts" "$RESET"
@@ -269,6 +272,7 @@ declare -A links=(
     ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
     ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
     ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
+    ["seclists"]="https://github.com/danielmiessler/SecLists"
 )
 
 printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
