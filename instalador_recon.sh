@@ -31,7 +31,7 @@ sudo -v
         sleep 60
         kill -0 "$$" || exit
     done
-) 2>/dev/null & 
+) 2>/dev/null &
 
 # ---------- Atualização do sistema ----------
 printf "%bVamos começar atualizando o %bLinux...%b\n" "$CYAN_BOLD" "$GREEN_LIGHT" "$RESET"
@@ -55,12 +55,13 @@ pkg=(
     openssh-client
     cargo
     pipx
-    zsh 
+    zsh
     neovim
     nodejs
     npm
     nmap
-    htop   
+    htop
+    gobuster
 )
 
 printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"
@@ -225,7 +226,6 @@ declare -A ferramentas=(
     ["ffuf"]="github.com/ffuf/ffuf@latest"
     ["getJS"]="github.com/003random/getJS@latest"
     ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
-    ["gobuster"]="github.com/OJ/gobuster/v3@latest"
 )
 
 printf "%bInstalando ferramentas em Golang...%b\n" "$CYAN" "$RESET"
@@ -307,7 +307,7 @@ path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
     printf "%bCriando ambiente virtual em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
     python3 -m venv "${path4env}/libs"
-    # Ativar apenas para instalar as dependências do projeto (acaba o source ao fim do script 
+    # Ativar apenas para instalar as dependências do projeto (acaba o source ao fim do script
     source "${path4env}/libs/bin/activate"
     python -m pip install --upgrade pip setuptools wheel
     if python -m pip install -r "${path4env}/requirements.txt"; then
@@ -337,4 +337,3 @@ printf "1. subfinder: %bsubfinder -d alvo%b\n" "$CYAN_LIGHT" "$RESET"
 printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b\n" "$BLUE_LIGHT" "$RESET"
 printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT" "$RESET"
 printf "4. script de recon: %b./recon.sh -u alvo%b\n" "$GREEN_BOLD" "$RESET"
-
