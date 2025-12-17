@@ -53,10 +53,10 @@ pkg=(
     wget
     iputils-ping
     openssh-client
+    micro
     cargo
     pipx
     zsh
-    neovim
     nodejs
     npm
     nmap
@@ -74,102 +74,42 @@ for p in "${pkg[@]}"; do
     fi
 done
 
-# Instalar e configurar Neovim em ~/.config/nvim/init.lua
-# Ativar o pipefail para capturar erros na pipeline
-set -o pipefail
 
-# -------- Diretórios --------
-CONFIG_DIR="${HOME}/.config/nvim"
-mkdir -p "${CONFIG_DIR}"
+# Instala LSP plugin
+micro -plugin install lsp || {
+    echo "[+] Instalando plugin manual..."
+    mkdir -p ~/.config/micro/plugins
+    git clone https://github.com/AndCake/micro-plugin-lsp ~/.config/micro/plugins/lsp
+}
 
-# -------- Instalação do Lazy.nvim --------
-printf "%b[+] Instalando Lazy.nvim...%b\n" "$CYAN" "$RESET"
-LAZY_DIR="${HOME}/.local/share/nvim/lazy/lazy.nvim"
-if [ ! -d "${LAZY_DIR}" ]; then
-    git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable "${LAZY_DIR}"
-fi
-
-# -------- Configuração do init.lua --------
-cat > "${CONFIG_DIR}/init.lua" <<'EOF'
--- ========== Lazy.nvim ==========
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup({
-  -- Tema
-  { "ellisonleao/gruvbox.nvim", priority = 1000, config = function() vim.cmd.colorscheme("gruvbox") end },
-
-  -- Syntax highlight & LSP
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-  { "neovim/nvim-lspconfig" },
-
-  -- Autocomplete
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "L3MON4D3/LuaSnip",
+# Cria config do Micro
+mkdir -p ~/.config/micro
+cat > ~/.config/micro/settings.json << 'EOF'
+{
+    "lsp.server": {
+        "bash": "bash-language-server",
+        "python": "pylsp",
+        "lua": "lua-language-server",
+        "json": "vscode-json-language-server",
+        "yaml": "yaml-language-server"
     },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        snippet = { expand = function(args) require("luasnip").lsp_expand(args.body) end },
-        mapping = cmp.mapping.preset.insert({
-          ["<Tab>"] = cmp.mapping.select_next_item(),
-          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        }),
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "buffer" },
-          { name = "path" },
-        }),
-      })
-    end,
-  },
-})
-
-local lspconfig = require("lspconfig")
-lspconfig.pyright.setup({})
-lspconfig.gopls.setup({})
-lspconfig.bashls.setup({})
-
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-
-function ToggleNumbers()
-  local num = vim.wo.number
-  local rnum = vim.wo.relativenumber
-  local ruler = vim.wo.ruler
-  if num or rnum or ruler then
-    vim.wo.number = false
-    vim.wo.relativenumber = false
-    vim.wo.ruler = false
-    print("📘 Numeração e ruler desativados")
-  else
-    vim.wo.number = true
-    vim.wo.relativenumber = true
-    vim.wo.ruler = true
-    print("📗 Numeração e ruler ativados")
-  end
-end
-
-vim.api.nvim_set_keymap("n", "<C-n>", [[:lua ToggleNumbers()<CR>]], { noremap = true, silent = true })
+    "lsp.autocomplete": true,
+    "lsp.formatOnSave": true,
+    "lsp.tabcompletion": true,
+    "lsp.jumpToDefinition": "Alt-d",
+    "lsp.hover": "Alt-k",
+    "lsp.signatureHelp": "Alt-h",
+    "colorscheme": "monokai",
+    "tabstospaces": 4,
+    "autoindent": true,
+    "cursorline": true,
+    "divisions": "vertical",
+    "ignorecursorinsert": false,
+    "infobar": true,
+    "pluginchannels": [
+        "https://github.com/micro-editor/plugin-channel"
+    ]
+}
 EOF
 
 # -------- Criando ambiente isolado para pacotes python em $HOME/piplibs/ -------
@@ -183,16 +123,21 @@ PYBIN="${PIPLIBS}/bin/python"
 PIPBIN="${PIPLIBS}/bin/pip"
 
 # Cria um alias permanente para ativar o venv rapidamente
-if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "${HOME}/.zshrc"; then
-    printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "${HOME}/.zshrc"
-    printf "%b[✔]%b Alias 'venv' adicionado ao .zshrc\n" "$GREEN_BOLD" "$RESET"
-else
-    printf "%b[=]%b Alias 'venv' já existe no .zshrc\n" "$YELLOW_BOLD" "$RESET"
+# Detecta shell automaticamente
+SHELLRC="${HOME}/.${SHELL##*/}rc"
+[ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
+
+if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
+    printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
 fi
 printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
-printf "%b[INFO]%b Após ativar, o Neovim funcionará com todos os LSPs e plugins corretamente.\n" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Após ativar, o Micro funcionará com todos os LSPs e plugins corretamente.\n
+" "$CYAN_BOLD" "$RESET"
 # Ativa o env dentro do script para instalar e para o nvim headless
 source "${PIPLIBS}/bin/activate"
+
+#ativa pipefail 
+set -o pipefail 
 
 # Upgrade pip/setuptools/wheel dentro do venv (opcional, recomendado)
 "${PIPBIN}" install --upgrade pip setuptools wheel
@@ -206,14 +151,12 @@ fi
 GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha instalando gopls%b\n" "$YELLOW" "$RESET"
 sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b\n" "$YELLOW" "$RESET"
 
-# -------- Lazy sync plugins (assegurar que nvim veja o piplibs) --------
-env PATH="${HOME}/go/bin:${PIPLIBS}/bin:${PATH}" nvim --headless "+Lazy sync" +qa || printf "%bLazy sync falhou — abra o nvim e rode :Lazy sync%b\n" "$YELLOW" "$RESET"
-
 # -------- Mensagem final parcial --------
-printf "%b[✔] Instalação do Neovim concluída!%b\n" "$GREEN_BOLD" "$RESET"
-printf "%bIMPORTANTE:%b Para usar o Neovim com os LSPs, ative o venv:%b\n  %bsource ~/piplibs/bin/activate%b\n" "$YELLOW" "$RESET" "$CYAN" "$RESET"
+printf "%b[✔] Instalação do Micro concluída!%b\n" "$GREEN_BOLD" "$RESET"
+printf "%bIMPORTANTE:%b Para usar o Micro com os LSPs, ative o venv:%b\n  %bsource ~/piplibs/bin/activate%b\n
+" "$YELLOW" "$RESET" "$CYAN" "$RESET"
 
-# Desativar pipefail local
+# Desativar pipefail
 set +o pipefail
 
 # ---------- Instalando ferramentas Go ----------
@@ -272,7 +215,6 @@ declare -A links=(
     ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
     ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
     ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
-    ["seclists"]="https://github.com/danielmiessler/SecLists"
 )
 
 printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
@@ -285,7 +227,17 @@ for repo in "${!links[@]}"; do
         git -C "${repo}" reset --hard
         git -C "${repo}" pull
     fi
-done
+done 
+
+# SecLists SEPARADO (fora do loop)
+if [ ! -d "SecLists" ]; then
+    printf "%bDeseja instalar SecLists? (s/N)%b" "$CYAN_LIGHT" "$RESET"
+    read opcao
+    case "$opcao" in
+        [sSyY]*) git clone https://github.com/danielmiessler/SecLists.git ;;
+        *) printf "%bPulando SecLists%b\n" "$YELLOW_BOLD" "$RESET" ;;
+    esac
+fi
 
 # ---------- Tentando instalar repositorios com pip (usando piplibs) ----------
 for repo in "${!links[@]}"; do
