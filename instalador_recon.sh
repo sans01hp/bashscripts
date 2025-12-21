@@ -220,10 +220,11 @@ fi
 # ---------- Tentando instalar repositorios com pip (usando piplibs) ----------
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
-    if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then                                             printf "%bTentando instalar %s com pip (no piplibs)%b
-" "$GREEN_BOLD" "${repo}" "$RESET"
+    if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then                                            
+        printf "%bTentando instalar %s com pip (no piplibs)%b
+        " "$GREEN_BOLD" "${repo}" "$RESET"
         "${PIPBIN}" install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b
-" "$RED_BOLD" "${repo}" "$RESET"
+        " "$RED_BOLD" "${repo}" "$RESET"
         if [ -f "${PIPLIBS}/bin/${repo}" ]; then
             sudo ln -sf "${PIPLIBS}/bin/${repo}" /usr/local/bin/"${repo}"
         fi
