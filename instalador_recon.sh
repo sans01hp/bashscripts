@@ -57,6 +57,7 @@ pkg=(
     iputils-ping
     openssh-client
     neovim
+    micro
     cargo
     pipx
     zsh
@@ -71,38 +72,6 @@ printf "%b[*] Instalando pacotes...%b                                           
         printf "%b[✔] %s já instalado.%b
 " "$GREEN_BOLD" "$p" "$RESET"                                                                                               else                                                                                                                        printf "%b[ * ] Instalando %s...%b                                                                              " "$YELLOW" "$p" "$RESET"                                                                                                       sudo apt install -y "${p}"                                                                                          fi
 done
-
-# ---------- LazyVim + TokyoNight ----------
-printf "%bInstalando LazyVim + TokyoNight LSP...%b
-" "$CYAN_BOLD" "$RESET"                                                                                                 
-# Purge nvim antigo
-rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
-
-# LazyVim fresh
-git clone https://github.com/LazyVim/starter ~/.config/nvim                                                             rm -rf ~/.config/nvim/.git
-                                                                                                                        # TokyoNight cores legíveis (alto contraste)                                                                            mkdir -p ~/.config/nvim/lua/plugins                                                                                     cat > ~/.config/nvim/lua/plugins/colors.lua << 'EOF'
-return {
-  {
-    "folke/tokyonight.nvim",
-    priority = 1000,                                                                                                        opts = { style = "storm", transparent = false },
-    config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd("colorscheme tokyonight")
-    end,
-  },
-}
-EOF
-
-# Fix readonly nvim
-cat >> ~/.config/nvim/lua/config/options.lua << 'EOF'
-vim.opt.readonly = false
-vim.opt.modifiable = true
-EOF
-
-printf "%b[✔] LazyVim + TokyoNight instalado!%b
-" "$GREEN_BOLD" "$RESET"
-printf "%bUse: nvim + :Lazy sync (primeira vez)%b
-" "$CYAN_LIGHT" "$RESET"
 
 # ------- Path para o venv -------
 PIPLIBS="${HOME}/piplibs"
@@ -231,8 +200,7 @@ if [ ! -d "SecLists" ]; then
     read opcao
     case "$opcao" in
         [sSyY]*) git clone https://github.com/danielmiessler/SecLists.git ;;
-        *) printf "%bPulando SecLists%b
-" "$YELLOW_BOLD" "$RESET" ;;
+        *) printf "%bPulando SecLists%b" "$YELLOW_BOLD" "$RESET" ;;
     esac
 fi
 
