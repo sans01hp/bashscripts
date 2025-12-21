@@ -25,12 +25,15 @@ if [ "$(uname)" != "Linux" ]; then
 fi
 
 # Solicita senha sudo uma vez no começo
-printf "%bVerificando permissões de sudo...%b                                                                           " "$CYAN_BOLD" "$RESET"
+printf "%bVerificando permissões de sudo...%b                                                                         
+" "$CYAN_BOLD" "$RESET"
 sudo -v
+
 (
     while true; do
         sudo -n true
-        sleep 60                                                                                                                kill -0 "$$" || exit
+        sleep 60                                                                                                               
+        kill -0 "$$" || exit
     done
 ) 2>/dev/null &
 
@@ -90,7 +93,8 @@ PYBIN="${PIPLIBS}/bin/python"
 PIPBIN="${PIPLIBS}/bin/pip"
 
 # Cria um alias permanente para ativar o venv rapidamente
-SHELLRC="${HOME}/.${SHELL##*/}rc"                                                                                       [ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
+SHELLRC="${HOME}/.${SHELL##*/}rc"                                                                                       
+[ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
 
 if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
     printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
@@ -163,7 +167,8 @@ bashscriptsoutdirs=(
 mkdir -p "${HOME}/bashscripts"
 printf "%bCriando Pastas de Output em %b%s%b
 " "$YELLOW_BOLD" "$GREEN_BOLD" "${HOME}/bashscripts" "$RESET"
-                                                                                                                        for dir in "${bashscriptsoutdirs[@]}"; do
+                                                                                                                                                                                                                                            
+    for dir in "${bashscriptsoutdirs[@]}"; do
     outputdir="${HOME}/bashscripts/${dir}"
     if [[ ! -d "${outputdir}" ]]; then
         mkdir -p "${outputdir}"
@@ -251,7 +256,7 @@ fi
 if compgen -G "${HOME}/go/bin/*" > /dev/null; then
     for go_tool in "${HOME}/go/bin/"*; do
         tool_name=$(basename "${go_tool}")
-        sudo ln -sf "${go_tool}" /usr/local/bin/"${tool_name}"
+        sudo ln -sf "${go_tool}" /usr/local/bin/"${tool_name}
     done
 fi
 
