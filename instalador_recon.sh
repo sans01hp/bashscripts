@@ -68,9 +68,17 @@ pkg=(
     gobuster
 )
 
-printf "%b[*] Instalando pacotes...%b                                                                                   " "$CYAN_BOLD" "$RESET"                                                                                                 for p in "${pkg[@]}"; do                                                                                                    if command -v "${p}" &> /dev/null; then
+printf "%b[*] Instalando pacotes...%b      
+" "$CYAN_BOLD" "$RESET"     
+for p in "${pkg[@]}"; do                                                                                                   
+    if command -v "${p}" &> /dev/null; then
         printf "%b[✔] %s já instalado.%b
-" "$GREEN_BOLD" "$p" "$RESET"                                                                                               else                                                                                                                        printf "%b[ * ] Instalando %s...%b                                                                              " "$YELLOW" "$p" "$RESET"                                                                                                       sudo apt install -y "${p}"                                                                                          fi
+        " "$GREEN_BOLD" "$p" "$RESET"                                                                                             
+    else                                                                                                                       
+       printf "%b[ * ] Instalando %s...%b                                                                             
+       " "$YELLOW" "$p" "$RESET"                                                                                                       
+       sudo apt install -y "${p}"                                                                                         
+    fi
 done
 
 # ------- Path para o venv -------
