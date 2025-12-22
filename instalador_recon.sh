@@ -210,7 +210,7 @@ done
 # ---------- Ambiente virtual do projeto codigos_para_aprendizado ----------
 path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
-    printf "%bCriando ambiente virtual em %b%s%\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
+    printf "%bCriando ambiente virtual em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
     python3 -m venv "${path4env}/libs"
     source "${path4env}/libs/bin/activate"
     python -m pip install --upgrade pip setuptools wheel
