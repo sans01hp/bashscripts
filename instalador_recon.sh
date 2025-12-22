@@ -131,7 +131,7 @@ sleep 1
 for ferramenta in "${!ferramentas[@]}"; do
     printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
     sleep 1
-    env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b" "$YELLOW" "${ferramenta}" "$RESET"
+    env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${ferramenta}" "$RESET"
 done
 
 # ---------- Instalação manual do Aquatone
