@@ -14,19 +14,16 @@ BLUE_LIGHT="\u001B[1;94m"
 PURPLE_LIGHT="\u001B[1;95m"
 RESET="\u001B[0m"
 
-printf "%bEsse script foi feito com o propósito de ser usado no Kali para o Userland%b
-" "$YELLOW" "$RESET"
+printf "%bEsse script foi feito com o propósito de ser usado no Kali para o Userland%b\n" "$YELLOW" "$RESET"
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
-    printf "%bVocê não está usando um sistema GNU/Linux ou similar%b
-" "$GREEN_BOLD" "$RESET"
+    printf "%bVocê não está usando um sistema GNU/Linux ou similar%b\n" "$GREEN_BOLD" "$RESET"
     exit 1
 fi
 
 # Solicita senha sudo uma vez no começo
-printf "%bVerificando permissões de sudo...%b                                                                         
-" "$CYAN_BOLD" "$RESET"
+printf "%bVerificando permissões de sudo...%b\n" "$CYAN_BOLD" "$RESET"
 sudo -v
 
 (
@@ -38,17 +35,15 @@ sudo -v
 ) 2>/dev/null &
 
 # ---------- Atualização do sistema ----------
-printf "%bVamos começar atualizando o %bLinux...%b
-" "$CYAN_BOLD" "$GREEN_LIGHT" "$RESET"
+printf "%bVamos começar atualizando o %bLinux...%b\n" "$CYAN_BOLD" "$GREEN_LIGHT" "$RESET"
 sleep 3
-cd ~
+cd 
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt autoremove -y
 
 # ---------- Instalação de pacotes APT ----------
-printf "%bInstalando linguagens de programação e pacotes necessários...%b
-" "$CYAN" "$RESET"
+printf "%bInstalando linguagens de programação e pacotes necessários...%b\n" "$CYAN" "$RESET"
 sleep 1
 
 pkg=(
@@ -59,7 +54,6 @@ pkg=(
     wget
     iputils-ping
     openssh-client
-    neovim
     micro
     cargo
     pipx
@@ -71,15 +65,12 @@ pkg=(
     gobuster
 )
 
-printf "%b[*] Instalando pacotes...%b      
-" "$CYAN_BOLD" "$RESET"     
+printf "%b[*] Instalando pacotes...%b\n" "$CYAN_BOLD" "$RESET"     
 for p in "${pkg[@]}"; do                                                                                                   
     if command -v "${p}" &> /dev/null; then
-        printf "%b[✔] %s já instalado.%b
-        " "$GREEN_BOLD" "$p" "$RESET"                                                                                             
+        printf "%b[✔] %s já instalado.%b\n" "$GREEN_BOLD" "$p" "$RESET"                                                                                             
     else                                                                                                                       
-       printf "%b[ * ] Instalando %s...%b                                                                             
-       " "$YELLOW" "$p" "$RESET"                                                                                                       
+       printf "%b[ * ] Instalando %s...%b\n" "$YELLOW" "$p" "$RESET"                                                                                                       
        sudo apt install -y "${p}"                                                                                         
     fi
 done
@@ -99,10 +90,8 @@ SHELLRC="${HOME}/.${SHELL##*/}rc"
 if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
     printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
 fi
-printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.
-" "$CYAN_BOLD" "$RESET"
-printf "%b[INFO]%b Após ativar, o Neovim funcionará com todos os LSPs e plugins corretamente.
-" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Após ativar, Micro funcionará com todos os LSPs e plugins corretamente.\n" "$CYAN_BOLD" "$RESET"
 
 # Ativa o env dentro do script para instalar
 source "${PIPLIBS}/bin/activate"
@@ -114,16 +103,13 @@ set -o pipefail
 "${PIPBIN}" install --upgrade pip setuptools wheel
 
 # Instalar pynvim e pylsp no venv
-if ! "${PIPBIN}" install pynvim "python-lsp-server[all]"; then
-    printf "%bFalha instalando pynvim/pylsp no venv%b
-" "$YELLOW" "$RESET"
-fi
+# if ! "${PIPBIN}" install pynvim "python-lsp-server[all]"; then
+# printf "%bFalha instalando pynvim/pylsp no venv%b" "$YELLOW" "$RESET"
+# fi
 
 # Instalar gopls e bash-language-server
-GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha instalando gopls%b
-" "$YELLOW" "$RESET"
-sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b
-" "$YELLOW" "$RESET"
+GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha instalando gopls%b\n" "$YELLOW" "$RESET"
+sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b\n" "$YELLOW" "$RESET"
 
 # Desativar pipefail
 set +o pipefail
@@ -140,15 +126,12 @@ declare -A ferramentas=(
     ["nuclei"]="github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
 )
 
-printf "%bInstalando ferramentas em Golang...%b
-" "$CYAN" "$RESET"
+printf "%bInstalando ferramentas em Golang...%b" "$CYAN" "$RESET"
 sleep 1
 for ferramenta in "${!ferramentas[@]}"; do
-    printf "%bInstalando %b%s%b...%b
-" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
+    printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
     sleep 1
-    env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b
-" "$YELLOW" "${ferramenta}" "$RESET"
+    env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b" "$YELLOW" "${ferramenta}" "$RESET"
 done
 
 # ---------- Instalação manual do Aquatone
@@ -165,18 +148,14 @@ bashscriptsoutdirs=(
 )
 
 mkdir -p "${HOME}/bashscripts"
-printf "%bCriando Pastas de Output em %b%s%b
-" "$YELLOW_BOLD" "$GREEN_BOLD" "${HOME}/bashscripts" "$RESET"
-                                                                                                                                                                                                                                            
-    for dir in "${bashscriptsoutdirs[@]}"; do
+printf "%bCriando Pastas de Output em %b%s%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${HOME}/bashscripts" "$RESET"
+ for dir in "${bashscriptsoutdirs[@]}"; do
     outputdir="${HOME}/bashscripts/${dir}"
     if [[ ! -d "${outputdir}" ]]; then
         mkdir -p "${outputdir}"
-        printf "%b[✔]%b Criado: %s
-" "$GREEN_BOLD" "$RESET" "${outputdir}"
+        printf "%b[✔]%b Criado: %s\n" "$GREEN_BOLD" "$RESET" "${outputdir}"
     else
-        printf "%b[=]%b O diretório já existe: %s
-" "$YELLOW_BOLD" "$RESET" "${outputdir}"
+        printf "%b[=]%b O diretório já existe: %s\n" "$YELLOW_BOLD" "$RESET" "${outputdir}"
     fi
 done
 
@@ -192,16 +171,13 @@ declare -A links=(
     ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
 )
 
-printf "%bBaixando repositórios necessários...%b
-" "$CYAN" "$RESET"
+printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
 for repo in "${!links[@]}"; do
     if [ ! -d "${repo}" ]; then
-        printf "%bClonando %s...%b
-" "$CYAN_LIGHT" "${repo}" "$RESET"
+        printf "%bClonando %s...%b\n" "$CYAN_LIGHT" "${repo}" "$RESET"
         git clone "${links[${repo}]}"
     else
-        printf "%bAtualizando repositório %b%s%b...%b
-" "$GREEN" "$CYAN_LIGHT" "${repo}" "$GREEN" "$RESET"
+        printf "%bAtualizando repositório %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${repo}" "$GREEN" "$RESET"
         git -C "${repo}" reset --hard
         git -C "${repo}" pull
     fi
@@ -209,11 +185,11 @@ done
 
 # SecLists SEPARADO (fora do loop)
 if [ ! -d "SecLists" ]; then
-    printf "%bDeseja instalar SecLists? (s/N)%b" "$CYAN_LIGHT" "$RESET"
+    printf "%bDeseja instalar SecLists? (s/N)%b\n" "$CYAN_LIGHT" "$RESET"
     read opcao
     case "$opcao" in
         [sSyY]*) git clone https://github.com/danielmiessler/SecLists.git ;;
-        *) printf "%bPulando SecLists%b" "$YELLOW_BOLD" "$RESET" ;;
+        *) printf "%bPulando SecLists%b\n" "$YELLOW_BOLD" "$RESET" ;;
     esac
 fi
 
@@ -221,61 +197,47 @@ fi
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
     if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then                                            
-        printf "%bTentando instalar %s com pip (no piplibs)%b
-        " "$GREEN_BOLD" "${repo}" "$RESET"
-        "${PIPBIN}" install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b
-        " "$RED_BOLD" "${repo}" "$RESET"
+        printf "%bTentando instalar %s com pip (no piplibs)%b\n" "$GREEN_BOLD" "${repo}" "$RESET"
+        "${PIPBIN}" install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "${repo}" "$RESET"
         if [ -f "${PIPLIBS}/bin/${repo}" ]; then
             sudo ln -sf "${PIPLIBS}/bin/${repo}" /usr/local/bin/"${repo}"
         fi
     else
-        printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b
-" "$YELLOW_BOLD" "${repo}" "$RESET"
+        printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "${repo}" "$RESET"
     fi
 done
 
 # ---------- Ambiente virtual do projeto codigos_para_aprendizado ----------
 path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
-    printf "%bCriando ambiente virtual em %b%s%b
-" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
+    printf "%bCriando ambiente virtual em %b%s%\n" "$YELLOW_BOLD" "$GREEN_BOLD" "${path4env}" "$RESET"
     python3 -m venv "${path4env}/libs"
     source "${path4env}/libs/bin/activate"
     python -m pip install --upgrade pip setuptools wheel
     if python -m pip install -r "${path4env}/requirements.txt"; then
-        printf "%bSucesso ao instalar livrarias%b
-" "$GREEN_BOLD" "$RESET"
-    else                                                                                                                        printf "%bFalha na instalação de livrarias (verifique logs)%b
-" "$RED_BOLD" "$RESET"
+    	printf "%bSucesso ao instalar livrarias%b\n" "$GREEN_BOLD" "$RESET"
+    else                                                                                                                       
+    	printf "%bFalha na instalação de livrarias (verifique logs)%b\n" "$RED_BOLD" "$RESET"
     fi
 else
-    printf "%b[AVISO]%bO PATH %s não foi encontrado.
-" "$YELLOW_BOLD" "$RESET" "${path4env}"
+    printf "%b[AVISO]%bO PATH %s não foi encontrado.\n" "$YELLOW_BOLD" "$RESET" "${path4env}"
 fi
 
 # ---------- Links simbólicos para Go ----------
 if compgen -G "${HOME}/go/bin/*" > /dev/null; then
-    for go_tool in "${HOME}/go/bin/"*; do
-        tool_name=$(basename "${go_tool}")
-        sudo ln -sf "${go_tool}" /usr/local/bin/"${tool_name}
-    done
+	for go_tool in "${HOME}/go/bin/"*; do
+    	tool_name=$(basename "${go_tool}")
+        sudo ln -sf "${go_tool}" /usr/local/bin/"${tool_name}"
+	done
 fi
 
-printf "%bAviso: %bAs ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.%b
-" "$YELLOW" "$GREEN" "$RESET"
-printf "%bInstalação concluída%b
-" "$GREEN_BOLD" "$RESET"
+printf "%bAviso: %bAs ferramentas em Golang foram linkadas para /usr/local/bin para facilitar o uso das mesmas.%b\n" "$YELLOW" "$GREEN" "$RESET"
+printf "%bInstalação concluída%b\n" "$GREEN_BOLD" "$RESET"
 sleep 1
 
 # ---------- Exemplos de uso ----------
-printf "
-%bExemplos de uso das ferramentas instaladas:%b
-" "$CYAN_BOLD" "$RESET"
-printf "1. subfinder: %bsubfinder -d alvo%b
-" "$CYAN_LIGHT" "$RESET"
-printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b
-" "$BLUE_LIGHT" "$RESET"
-printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b
-" "$PURPLE_LIGHT" "$RESET"
-printf "4. script de recon: %b./recon.sh -u alvo%b
-" "$GREEN_BOLD" "$RESET"
+printf "%bExemplos de uso das ferramentas instaladas:%b\n" "$CYAN_BOLD" "$RESET"
+printf "1. subfinder: %bsubfinder -d alvo%b\n" "$CYAN_LIGHT" "$RESET"
+printf "2. ffuf: %bffuf -u alvo/FUZZ -w caminho/da/wordlist%b\n" "$BLUE_LIGHT" "$RESET"
+printf "3. nuclei: %bnuclei -u alvo -t nuclei-templates/cves%b\n" "$PURPLE_LIGHT" "$RESET"
+printf "4. script de recon: %b./recon.sh -u alvo%b\n" "$GREEN_BOLD" "$RESET"
