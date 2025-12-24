@@ -58,8 +58,6 @@ pkg=(
     cargo
     pipx
     zsh
-    nodejs
-    npm
     nmap
     htop
     gobuster
@@ -96,20 +94,11 @@ printf "%b[INFO]%b Após ativar, Micro funcionará com todos os LSPs e plugins c
 # Ativa o env dentro do script para instalar
 source "${PIPLIBS}/bin/activate"
 
-# ativa pipefail
-set -o pipefail
+# ativa pipefail 
+set -o pipefail 
 
 # Upgrade pip/setuptools/wheel dentro do venv
 "${PIPBIN}" install --upgrade pip setuptools wheel
-
-# Instalar pynvim e pylsp no venv
-# if ! "${PIPBIN}" install pynvim "python-lsp-server[all]"; then
-# printf "%bFalha instalando pynvim/pylsp no venv%b" "$YELLOW" "$RESET"
-# fi
-
-# Instalar gopls e bash-language-server
-GO111MODULE=on go install golang.org/x/tools/gopls@latest || printf "%bFalha instalando gopls%b\n" "$YELLOW" "$RESET"
-sudo npm install -g bash-language-server || printf "%bFalha instalando bash-language-server%b\n" "$YELLOW" "$RESET"
 
 # Desativar pipefail
 set +o pipefail
@@ -162,10 +151,6 @@ done
 # ---------- Clonando repositórios ----------
 declare -A links=(
     ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
-    ["sherlock"]="https://github.com/sherlock-project/sherlock"
-    ["git-dumper"]="https://github.com/arthaud/git-dumper"
-    ["zphisher"]="https://github.com/htr-tech/zphisher"
-    ["sqlmap"]="https://github.com/sqlmapproject/sqlmap"
     ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
     ["codigos_para_aprendizado"]="https://github.com/sans01hp/codigos_para_aprendizado"
     ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
@@ -183,7 +168,7 @@ for repo in "${!links[@]}"; do
     fi
 done
 
-# SecLists SEPARADO (fora do loop)
+# SecLists Opcional 
 if [ ! -d "SecLists" ]; then
     printf "%bDeseja instalar SecLists? (s/N)%b\n" "$CYAN_LIGHT" "$RESET"
     read opcao
@@ -217,7 +202,7 @@ if [[ -d "${path4env}" ]]; then
     if python -m pip install -r "${path4env}/requirements.txt"; then
     	printf "%bSucesso ao instalar livrarias%b\n" "$GREEN_BOLD" "$RESET"
     else                                                                                                                       
-    	printf "%bFalha na instalação de livrarias (verifique logs)%b\n" "$RED_BOLD" "$RESET"
+    	printf "%bFalha na instalação de livrarias%b\n" "$RED_BOLD" "$RESET"
     fi
 else
     printf "%b[AVISO]%bO PATH %s não foi encontrado.\n" "$YELLOW_BOLD" "$RESET" "${path4env}"
