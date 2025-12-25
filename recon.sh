@@ -15,16 +15,11 @@ RESET="\u001B[0m"
 
 # ---------- Funções ----------
 menu() {
-        printf "%b1-Recon completo (Subfinder + Httpx + Gau)%b
-" "$GREEN" "$RESET"
-        printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b
-" "$PURPLE" "$RED" "$RESET"
-        printf "%b4-Achar informações no JavaScript%b
-" "$CYAN_LIGHT" "$RESET"
-        printf "%b9-Mudar alvo%b
-" "$RED" "$RESET"
-        printf "%b00-Sair%b
-" "$YELLOW" "$RESET"
+        printf "%b1-Recon completo (Subfinder + Httpx + Gau)%b\n" "$GREEN" "$RESET"
+        printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b\n" "$PURPLE" "$RED" "$RESET"
+        printf "%b4-Achar informações no JavaScript%b\n" "$CYAN_LIGHT" "$RESET"
+        printf "%b9-Mudar alvo%b\n" "$RED" "$RESET"
+        printf "%b00-Sair%b\n" "$YELLOW" "$RESET"
 }
 
 recon_all() {
@@ -41,52 +36,37 @@ recon_all() {
     subfinder_output="${subfinder_dir}/${domain}.txt"
     nmap_output="${nmap_dir}/${domain}.txt"
 
-    printf "%b[INFO]%b Rodando Subfinder...
-" "$GREEN" "$RESET"
+    printf "%b[INFO]%b Rodando Subfinder...\n" "$GREEN" "$RESET"
     subfinder -d "$domain" -silent | tee "$subfinder_output"
 
-    printf "%b[INFO]%b Rodando Httpx e Gau...
-" "$GREEN" "$RESET"
+    printf "%b[INFO]%b Rodando Httpx e Gau...\n" "$GREEN" "$RESET"
     cat "$subfinder_output" | httpx -silent | gau | tee "$gau_output"
 
-    printf "%b[INFO]%b Rodando Nmap...
-" "$GREEN" "$RESET"
+    printf "%b[INFO]%b Rodando Nmap...\n" "$GREEN" "$RESET"
     if ! sudo nmap -T4 -F -sV -iL "$subfinder_output" -oN "$nmap_output" ; then
-        printf "%b[WARNING]%b Nmap falhou, tentando modo unprivileged...
-" "$YELLOW" "$RESET"
+        printf "%b[WARNING]%b Nmap falhou, tentando modo unprivileged...\n" "$YELLOW" "$RESET"
         nmap --unprivileged -T4 -F -sV -iL "$subfinder_output" -oN "${nmap_output%.txt}_unprivileged.txt"
     fi
 
-    printf "%b[OK]%b Recon completo. Diretórios de saída:
-- Subfinder: %s
-- Gau: %s
-- Nmap: %s
-" \
-    "$GREEN" "$RESET" "$subfinder_dir" "$gau_dir" "$nmap_dir"
+    printf "%b[OK]%b Recon completo. Diretórios de saída:\n
+        - Subfinder: %s\n
+        - Gau: %s\n
+        - Nmap: %s\n"  "$GREEN" "$RESET" "$subfinder_dir" "$gau_dir" "$nmap_dir"
 }
 
 javascript() {
-        printf "%b[INFO]%b Coletando informações no JavaScript...
-" "$GREEN" "$RESET"
-        printf "%s
-" "${url}" | getJS
+         printf "%b[INFO]%b Coletando informações no JavaScript...\n" "$GREEN" "$RESET"
+         printf "%s" "${url}" | getJS
 }
 
 nuclei() {
-        printf "%bQuais templates quer usar?%b
-" "$YELLOW" "$RESET"
-        printf "1-todos
-"
-        printf "2-exposures
-"
-        printf "3-cves
-"
-        printf "4-exposed panels
-"
-        printf "5-fuzzing
-"
-        printf "6-vulnerabilities
-"
+        printf "%bQuais templates quer usar?%b\n" "$YELLOW" "$RESET"
+        printf "%b1-todos\n" "$GREEN"
+        printf "2-exposures\n"
+        printf "3-cves\n"
+        printf "4-exposed panels\n"
+        printf "5-fuzzing\n"
+        printf "6-vulnerabilities%b\n" "$RESET"
 
         read -r template
 
@@ -97,21 +77,19 @@ nuclei() {
                 4) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/exposed-panels" ;;
                 5) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/fuzzing" ;;
                 6) "$HOME/go/bin/nuclei" -u "${url}" -t "${HOME}/nuclei-templates/vulnerabilities" ;;
-                *)
-                        printf "%bOpção inválida %b%s%b
-" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
-                        return ;;
+                *) 
+                        printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
+                        return 
+                        ;;
         esac
 }
 
 resetar_url() {
-        printf "%bDigite o %bDominio/Url %bque deseja analisar:%b
-" "$YELLOW" "$CYAN_LIGHT" "$YELLOW" "$RESET"
+        printf "%bDigite o %bDominio/Url %bque deseja analisar:%b\n" "$YELLOW" "$CYAN_LIGHT" "$YELLOW" "$RESET"
         read -r url
 
         if [[ -z "${url}" ]]; then
-                printf "%b[ERRO]%b URL vazia.%b
-" "$RED" "$YELLOW" "$RESET"
+                printf "%b[ERRO]%b URL vazia.%b\n" "$RED" "$YELLOW" "$RESET"
                 return 1
         fi
 
@@ -121,12 +99,10 @@ resetar_url() {
 
         # regex simplificado e portátil
         if [[ "${url}" =~ ^https?://([A-Za-z0-9.-]+.[A-Za-z]{2,})(/.*)?$ ]]; then
-                printf "%bAtualmente analisando o link: %b%s%b
-" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
+                printf "%bAtualmente analisando o link: %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "${url}" "$RESET"
                 return 0
         else
-                printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b
-" "$RED" "$YELLOW" "${url}" "$RESET"
+                printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
                 return 2
         fi
 }
@@ -150,8 +126,7 @@ while getopts "u:h" flag; do
                                 url="https://${url}"
                         fi
                         if ! [[ "${url}" =~ ^https?://([A-Za-z0-9.-]+.[A-Za-z]{2,})(/.*)?$ ]]; then
-                                printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b
-" "$RED" "$YELLOW" "${url}" "$RESET"
+                                printf "%b[ERRO]%b Dominio ou subdominio %s invalido.%b\n" "$RED" "$YELLOW" "${url}" "$RESET"
                                 exit 2
                         fi
                         ;;
@@ -164,9 +139,8 @@ done
 
 # verifica se a variavel está vazia
 if [[ -z "${url}" ]]; then
-        printf "%bA flag -u não pode ser vazia%b
-" "$YELLOW" "$RESET"
-        printf "%bUse $0 -u <url ou dominio>%b" "$GREEN" "$RESET"
+        printf "%bA flag -u não pode ser vazia%b\n" "$YELLOW" "$RESET"
+        printf "%bUse $0 -u <url ou dominio>%b\n" "$GREEN" "$RESET"
         exit 1
 fi
 
@@ -181,13 +155,11 @@ while true; do
                 4) javascript ;;
                 9) resetar_url ;;
                 00)
-                        printf "%bSaindo...%b
-" "$YELLOW" "$RESET"
+                        printf "%bSaindo...%b\n" "$YELLOW" "$RESET"
                         exit 0
                         ;;
                 *)
-                        printf "%bOpção inválida %b%s%b
-" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
+                        printf "%bOpção inválida %b%s%b\n" "$YELLOW" "$CYAN_LIGHT" "(╯°□°）╯︵┻━┻" "$RESET"
                         ;;
         esac
 done
