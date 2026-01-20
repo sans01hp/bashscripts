@@ -73,6 +73,58 @@ for p in "${pkg[@]}"; do
     fi
 done
 
+printf "%bcriando um init.lua para Neovim em %b${HOME}/.config/nvim/init.lua%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "$RESET"
+
+cat << 'EOF' > ~/.config/nvim/init.lua
+vim.g.mapleader = " "
+
+-- CORES (DESCOMENTE 1)
+vim.opt.termguicolors = true        -- TRUE COLOR ATIVADO
+vim.opt.background = "dark"
+
+-- 🎨 PALETAS (escolha 1):
+-- vim.cmd("colorscheme default")   -- Clássico original
+-- vim.cmd("colorscheme desert")    -- 🏜️ Limpo/areia (RECOMENDADO)
+-- vim.cmd("colorscheme slate")     -- 🌙 Escuro moderno
+-- vim.cmd("colorscheme ron")       -- ⚫ Minimalista
+-- vim.cmd("colorscheme industry")  -- 💻 Corporativo
+-- vim.cmd("colorscheme blue")      -- 🔵 Azul clássico
+
+-- INTERFACE
+vim.opt.number = true               -- Números linha
+vim.opt.relativenumber = true       -- Relativo
+vim.opt.cursorline = true           -- Linha atual
+vim.opt.wrap = false                -- Sem quebra linha
+vim.opt.scrolloff = 8               -- Margem scroll
+vim.opt.updatetime = 50             -- Mais responsivo
+
+-- TABS/ESPÇO
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.smartindent = true
+
+-- BUSCA
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.hlsearch = false            -- Sem highlight busca
+vim.opt.incsearch = true
+
+-- LSP NATIVO (Neovim 0.11+)
+vim.lsp.enable('lua_ls')       -- Lua
+vim.lsp.enable('bashls')       -- Bash
+vim.lsp.enable('pyright')      -- Python
+-- vim.lsp.enable('rust_analyzer') -- Rust (adicione se usar)
+
+-- KEYBINDINGS LSP
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition)  -- Definição
+vim.keymap.set('n', 'K', vim.lsp.buf.hover)        -- Docs
+vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
+
+-- TERMINAL
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+EOF
+
 # ------- Path para o venv -------
 PIPLIBS="${HOME}/piplibs"
 python3 -m venv "${PIPLIBS}"
