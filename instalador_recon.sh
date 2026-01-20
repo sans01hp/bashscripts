@@ -115,6 +115,21 @@ vim.opt.smartcase = true
 vim.opt.hlsearch = false            -- Sem highlight busca
 vim.opt.incsearch = true
 
+-- AUTOCOMPLETE NATIVE
+local cmp = require('cmp')
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<C-Space>'] = cmp.mapping.complete(),  -- Popup manual
+    ['<CR>']      = cmp.mapping.confirm({ select = true }),
+    ['<Tab>']     = cmp.mapping.select_next_item(),
+    ['<S-Tab>']   = cmp.mapping.select_prev_item(),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },  -- LSP sugestões
+    { name = 'buffer' },    -- Palavras do buffer
+  })
+})
+
 -- LSP NATIVO (Neovim 0.11+)
 vim.lsp.enable('lua_ls')       -- Lua
 vim.lsp.enable('bashls')       -- Bash
