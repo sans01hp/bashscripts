@@ -55,6 +55,10 @@ pkg=(
     iputils-ping
     openssh-client
     neovim
+    node-pyright
+    node-bash-language-server
+    node-lua-language-server
+    rust-analyzer
     cargo
     pipx
     zsh
@@ -75,7 +79,7 @@ done
 
 printf "%bcriando um init.lua para Neovim em %b${HOME}/.config/nvim/init.lua%b\n" "$YELLOW_BOLD" "$GREEN_BOLD" "$RESET"
 
-cat << 'EOF' > ~/.config/nvim/init.lua
+cat << 'EOF' > ${HOME}/.config/nvim/init.lua
 vim.g.mapleader = " "
 
 -- CORES (DESCOMENTE 1)
@@ -89,6 +93,7 @@ vim.opt.background = "dark"
 -- vim.cmd("colorscheme ron")       -- ⚫ Minimalista
 -- vim.cmd("colorscheme industry")  -- 💻 Corporativo
 -- vim.cmd("colorscheme blue")      -- 🔵 Azul clássico
+-- Adicione no init.lua (depois das cores)
 
 -- INTERFACE
 vim.opt.number = true               -- Números linha
