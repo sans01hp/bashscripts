@@ -54,7 +54,7 @@ pkg=(
     wget
     iputils-ping
     openssh-client
-    micro
+    neovim
     cargo
     pipx
     zsh
@@ -89,8 +89,9 @@ if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; the
     printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
 fi
 printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
-printf "%b[INFO]%b Após ativar, Micro funcionará com todos os LSPs e plugins corretamente.\n" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Após ativar o venv você pode instalar ferramentas Python via pip\n" "$CYAN_BOLD" "$RESET"
 
+sleep 2
 # Ativa o env dentro do script para instalar
 source "${PIPLIBS}/bin/activate"
 
