@@ -48,6 +48,7 @@ sleep 1
 
 pkg=(
     python3
+    virtualenv
     golang
     curl
     unzip
