@@ -128,61 +128,26 @@ vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 EOF
 
-printf "%bConfigurando Micro (Gruvbox + LSP básico)...%b\n" "$YELLOW_BOLD" "$RESET"
+printf "%bConfigurando Micro (Monokai nativo)...%b\n" "$YELLOW_BOLD" "$RESET"
 
-# Cria estrutura
-mkdir -p "${HOME}/.config/micro/colorschemes"
-
-cat << 'MICROEOF' > "${HOME}/.config/micro/settings.json"
+mkdir -p "${HOME}/.config/micro"
+cat > "${HOME}/.config/micro/settings.json" << 'MICROEOF'
 {
-    "colorscheme": "gruvbox",
+    "colorscheme": "monokai",
     "tabsize": 2,
     "tabstospaces": true,
-    "autohide": true,
-    "backup": false,
-    "saveundo": false,
     "mouse": true,
     "clipboard": "external",
-    "softwrap": false,
-    "ruler": true,
-    "scrollbar": true,
-    "statusformat-l": "[%f%m]",
-    "statusformat-r": "%l:%c %y"
+    "ruler": true
 }
 MICROEOF
 
-# Gruvbox colorscheme (inline, sem curl)
-cat << 'GRUVBOX' > "${HOME}/.config/micro/colorschemes/gruvbox.micro"
-color-column-table.foreground="#fbf1c7"
-color-column-table.background="#3c3836"
-color-link="#fabd2f"
-color-link-underline=false
-color-marked="#d79921"
-color-whitespace="#928374"
-color-column="#665c54"
-color-line-number="#928374"
-color-line-number-selected="#fbf1c7"
-color-keyword "#fabd2f"
-color-type "#b8bb26"
-color-builtin "#fe8019"
-color-comment "#928374"
-color-constant "#d3869b"
-color-string "#b8bb26"
-color-number "#d3869b"
-color-function "#fabd2f"
-color-operator "#fe8019"
-color-preproc "#8ec07c"
-color-bracket "#83a598"
-color-ident "#fbf1c7"
-color-prompt "#b8bb26"
-color-diff-added "#b8bb26"
-color-diff-changed "#fabd2f"
-color-diff-removed "#fb4934"
-color-error "#fb4934"
-GRUVBOX
+# Aplica config via micro command (IMEDIATO)
+micro -config-dir "${HOME}/.config/micro" --plugin togglemacro +":set colorscheme monokai\n:quit\n" /dev/null >/dev/null 2>&1
 
-printf "%b[✔] Micro configurado! 🎨 Gruvbox + Ctrl+C/V/X funcionando%b\\n" "$GREEN_BOLD" "$RESET"
-printf "%bUse: %bmicro script.sh%b → Ctrl+E → %bset colorscheme gruvbox%b%b\\n" "$CYAN_BOLD" "$GREEN_BOLD" "$CYAN" "$GREEN_BOLD" "$RESET"
+printf "%b[✔] Micro Monokai ativo! 🎨%b\n" "$GREEN_BOLD" "$RESET"
+printf "%bTeste: %bmicro script.sh%b (já configurado)%b\n" "$CYAN_BOLD" "$GREEN_BOLD" "$CYAN" "$RESET"
+
 
 # ---------- Instalando ferramentas Go ----------
 declare -A ferramentas=(
