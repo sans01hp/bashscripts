@@ -49,17 +49,14 @@ sleep 1
 pkg=(
     python3
     virtualenv
-    python2
     golang
     curl
     unzip
     wget
     iputils-ping
     openssh-client
+    micro
     neovim
-    node-pyright
-    node-bash-language-server
-    node-lua-language-server
     rust-analyzer
     cargo
     pipx
@@ -111,17 +108,16 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 
+-- COMPATIBILIDADE
+vim.opt.encoding = 'utf-8'    -- Encoding Unicode
+vim.opt.fileencoding = 'utf-8'
+vim.opt.ambiwidth = 'single'  -- Emojis como 1 coluna (evita shift)
+
 -- BUSCA
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.hlsearch = false            -- Sem highlight busca
 vim.opt.incsearch = true
-
--- LSP NATIVO (Neovim 0.11+)
-vim.lsp.enable('lua_ls')       -- Lua
-vim.lsp.enable('bashls')       -- Bash
-vim.lsp.enable('pyright')      -- Python
--- vim.lsp.enable('rust_analyzer') -- Rust (adicione se usar)
 
 -- KEYBINDINGS LSP
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition)  -- Definição
@@ -132,36 +128,61 @@ vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 EOF
 
-# ------- Path para o venv -------
-PIPLIBS="${HOME}/piplibs"
-python3 -m venv "${PIPLIBS}"
+printf "%bConfigurando Micro (Gruvbox + LSP básico)...%b\n" "$YELLOW_BOLD" "$RESET"
 
-# ------ Path para atualizaçãode livrarias pip ------
-PYBIN="${PIPLIBS}/bin/python"
-PIPBIN="${PIPLIBS}/bin/pip"
+# Cria estrutura
+mkdir -p "${HOME}/.config/micro/colorschemes"
 
-# Cria um alias permanente para ativar o venv rapidamente
-SHELLRC="${HOME}/.${SHELL##*/}rc"                                                                                       
-[ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
+cat << 'MICROEOF' > "${HOME}/.config/micro/settings.json"
+{
+    "colorscheme": "gruvbox",
+    "tabsize": 2,
+    "tabstospaces": true,
+    "autohide": true,
+    "backup": false,
+    "saveundo": false,
+    "mouse": true,
+    "clipboard": "external",
+    "softwrap": false,
+    "ruler": true,
+    "scrollbar": true,
+    "statusformat-l": "[%f%m]",
+    "statusformat-r": "%l:%c %y"
+}
+MICROEOF
 
-if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
-    printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
-fi
-printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
-printf "%b[INFO]%b Após ativar o venv você pode instalar ferramentas Python via pip\n" "$CYAN_BOLD" "$RESET"
+# Gruvbox colorscheme (inline, sem curl)
+cat << 'GRUVBOX' > "${HOME}/.config/micro/colorschemes/gruvbox.micro"
+color-column-table.foreground="#fbf1c7"
+color-column-table.background="#3c3836"
+color-link="#fabd2f"
+color-link-underline=false
+color-marked="#d79921"
+color-whitespace="#928374"
+color-column="#665c54"
+color-line-number="#928374"
+color-line-number-selected="#fbf1c7"
+color-keyword "#fabd2f"
+color-type "#b8bb26"
+color-builtin "#fe8019"
+color-comment "#928374"
+color-constant "#d3869b"
+color-string "#b8bb26"
+color-number "#d3869b"
+color-function "#fabd2f"
+color-operator "#fe8019"
+color-preproc "#8ec07c"
+color-bracket "#83a598"
+color-ident "#fbf1c7"
+color-prompt "#b8bb26"
+color-diff-added "#b8bb26"
+color-diff-changed "#fabd2f"
+color-diff-removed "#fb4934"
+color-error "#fb4934"
+GRUVBOX
 
-sleep 2
-# Ativa o env dentro do script para instalar
-source "${PIPLIBS}/bin/activate"
-
-# ativa pipefail 
-set -o pipefail 
-
-# Upgrade pip/setuptools/wheel dentro do venv
-"${PIPBIN}" install --upgrade pip setuptools wheel
-
-# Desativar pipefail
-set +o pipefail
+printf "%b[✔] Micro configurado! 🎨 Gruvbox + Ctrl+C/V/X funcionando%b\\n" "$GREEN_BOLD" "$RESET"
+printf "%bUse: %bmicro script.sh%b → Ctrl+E → %bset colorscheme gruvbox%b%b\\n" "$CYAN_BOLD" "$GREEN_BOLD" "$CYAN" "$GREEN_BOLD" "$RESET"
 
 # ---------- Instalando ferramentas Go ----------
 declare -A ferramentas=(
@@ -238,6 +259,37 @@ if [ ! -d "SecLists" ]; then
     esac
 fi
 
+# ------- Path para o venv -------
+PIPLIBS="${HOME}/piplibs"
+python3 -m venv "${PIPLIBS}"
+
+# ------ Path para atualizaçãode livrarias pip ------
+PYBIN="${PIPLIBS}/bin/python"
+PIPBIN="${PIPLIBS}/bin/pip"
+
+# Cria um alias permanente para ativar o venv rapidamente
+SHELLRC="${HOME}/.${SHELL##*/}rc"                                                                                       
+[ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
+
+if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
+    printf "alias venv='source ${HOME}/piplibs/bin/activate'" >> "$SHELLRC"
+fi
+printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
+printf "%b[INFO]%b Após ativar o venv você pode instalar ferramentas Python via pip\n" "$CYAN_BOLD" "$RESET"
+
+sleep 2
+# Ativa o env dentro do script para instalar
+source "${PIPLIBS}/bin/activate"
+
+# ativa pipefail 
+set -o pipefail 
+
+# Upgrade pip/setuptools/wheel dentro do venv
+"${PIPBIN}" install --upgrade pip setuptools wheel
+
+# Desativar pipefail
+set +o pipefail
+
 # ---------- Tentando instalar repositorios com pip (usando piplibs) ----------
 for repo in "${!links[@]}"; do
     REPO_PATH="./${repo}"
@@ -251,7 +303,7 @@ for repo in "${!links[@]}"; do
         printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "${repo}" "$RESET"
     fi
 done
-
+deactivate
 # ---------- Ambiente virtual do projeto codigos_para_aprendizado ----------
 path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
@@ -267,7 +319,7 @@ if [[ -d "${path4env}" ]]; then
 else
     printf "%b[AVISO]%bO PATH %s não foi encontrado.\n" "$YELLOW_BOLD" "$RESET" "${path4env}"
 fi
-
+deactivate
 # ---------- Links simbólicos para Go ----------
 if compgen -G "${HOME}/go/bin/*" > /dev/null; then
 	for go_tool in "${HOME}/go/bin/"*; do
