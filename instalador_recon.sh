@@ -28,6 +28,7 @@ sudo -v
 
 (
     while true; do
+    
         sudo -n true
         sleep 60                                                                                                               
         kill -0 "$$" || exit
@@ -128,12 +129,12 @@ vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 EOF
 
-printf "%bConfigurando Micro (Monokai nativo)...%b\n" "$YELLOW_BOLD" "$RESET"
+printf "%bConfigurando Micro (Atom-Dark nativo)...%b\n" "$YELLOW_BOLD" "$RESET"
 
 mkdir -p "${HOME}/.config/micro"
 cat > "${HOME}/.config/micro/settings.json" << 'MICROEOF'
 {
-    "colorscheme": "monokai",
+    "colorscheme": "atom-dark",
     "tabsize": 2,
     "tabstospaces": true,
     "mouse": true,
