@@ -182,6 +182,10 @@ curl -s -o ~/common.txt https://raw.githubusercontent.com/danielmiessler/SecList
 printf "%b✅ %bcommon.txt instalada em %b~/common.txt%b\n" "$GREEN_BOLD" "$YELLOW_BOLD" "$GREEN_BOLD" "$RESET"
 [[ -f ~/common.txt ]] && printf "%b✅ Verificação OK! (%s linhas)%b\n" "$GREEN_BOLD" "$(wc -l <${HOME}/common.txt)" "$RESET" || printf "%b❌ %bFALHOU! Arquivo não encontrado%b\n" "$RED_BOLD" "$YELLOW_BOLD" "$RESET"
 
+printf "%b📋 Baixando lista XSS-Cheat-Sheet-PortSwigger.txt para  ffuf...%b\n" "$YELLOW_BOLD" "$RESET"
+curl -s -o ~/XSS-Cheat-Sheet-PortSwigger.txt https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Fuzzing/XSS/human-friendly/XSS-Cheat-Sheet-PortSwigger.txt
+[[ -f ~/XSS-Cheat-Sheet-PortSwigger.txt ]] && printf "%b✅ Verificação OK! (%s linhas)%b\n" "$GREEN_BOLD" "$(wc -l <${HOME}/XSS-Cheat-Sheet-PortSwigger.txt)" "$RESET" || printf "%b❌ %bFALHOU! Arquivo não encontrado%b\n" "$RED_BOLD" "$YELLOW_BOLD" "$RESET"
+
 # SecLists Opcional
 if [ ! -d "SecLists" ]; then
   printf "%bDeseja instalar SecLists? (s/N)%b\n" "$CYAN_LIGHT" "$RESET"
