@@ -14,7 +14,7 @@ BLUE_LIGHT="\u001B[1;94m"
 PURPLE_LIGHT="\u001B[1;95m"
 RESET="\u001B[0m"
 
-printf "%bEsse script foi feito com o propósito de ser usado no Kali para o Userland%b\n" "$YELLOW" "$RESET"
+printf "%bEsse script foi feito com o propósito de ser usado no Kali Linux%b\n" "$YELLOW" "$RESET"
 sleep 2
 
 if [ "$(uname)" != "Linux" ]; then
@@ -48,7 +48,6 @@ sleep 1
 
 pkg=(
   python3
-  virtualenv
   golang
   curl
   unzip
@@ -57,8 +56,6 @@ pkg=(
   openssh-client
   micro
   neovim
-  rust-analyzer
-  cargo
   pipx
   zsh
   nmap
@@ -125,17 +122,16 @@ declare -A ferramentas=(
 
 printf "%bInstalando ferramentas em Golang...%b" "$CYAN" "$RESET"
 sleep 1
-for ferramenta in "${!ferramentas[@]}"; do
-  printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${ferramenta}" "$GREEN" "$RESET"
+for f in "${!ferramentas[@]}"; do
+  printf "%bInstalando %b%s%b...%b\n" "$GREEN" "$CYAN_LIGHT" "${f}" "$GREEN" "$RESET"
   sleep 1
-  env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${ferramenta}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${ferramenta}" "$RESET"
+  env PATH="${HOME}/go/bin:${PATH}" go install -v "${ferramentas[${f}]}" || printf "%bFalha ao instalar %s%b\n" "$YELLOW" "${f}" "$RESET"
 done
 
-# ---------- Instalação manual do Aquatone
-git clone https://github.com/shelld3v/aquatone.git
-(cd aquatone && go build -o "${HOME}/go/bin/aquatone")
-
 # ---------- Criando Pastas de Output -----------
+
+# ativar pipefail
+set -o pipefail
 bashscriptsoutdirs=(
   subfinder_results
   gau_results
@@ -156,8 +152,8 @@ for dir in "${bashscriptsoutdirs[@]}"; do
     printf "%b[=]%b O diretório já existe: %s\n" "$YELLOW_BOLD" "$RESET" "${outputdir}"
   fi
 done
-
-# ---------- Clonando repositórios ----------
+set +o pipefail
+# ---------- Clonando repositórios --------------
 declare -A links=(
   ["ParamSpider"]="https://github.com/devanshbatham/ParamSpider"
   ["https-github.com-Rajkumrdusad-Tool-X"]="https://github.com/vaibhavguru/https-github.com-Rajkumrdusad-Tool-X.git"
@@ -165,7 +161,7 @@ declare -A links=(
   ["nuclei-templates"]="https://github.com/projectdiscovery/nuclei-templates"
 )
 
-printf "%bBaixando repositórios necessários...%b\n" "$CYAN" "$RESET"
+printf "%bBaixando repositórios adicionais para adição de ferramentas...%b\n" "$CYAN" "$RESET"
 for repo in "${!links[@]}"; do
   if [ ! -d "${repo}" ]; then
     printf "%bClonando %s...%b\n" "$CYAN_LIGHT" "${repo}" "$RESET"
@@ -177,6 +173,7 @@ for repo in "${!links[@]}"; do
   fi
 done
 
+#------------- Listas para fuzzing --------------
 printf "%b📋 Baixando common.txt (20KB) para Gobuster...%b\n" "$YELLOW_BOLD" "$RESET"
 curl -s -o ~/common.txt https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 printf "%b✅ %bcommon.txt instalada em %b~/common.txt%b\n" "$GREEN_BOLD" "$YELLOW_BOLD" "$GREEN_BOLD" "$RESET"
@@ -186,7 +183,7 @@ printf "%b📋 Baixando lista XSS-Cheat-Sheet-PortSwigger.txt para  ffuf...%b\n"
 curl -s -o ~/XSS-Cheat-Sheet-PortSwigger.txt https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Fuzzing/XSS/human-friendly/XSS-Cheat-Sheet-PortSwigger.txt
 [[ -f ~/XSS-Cheat-Sheet-PortSwigger.txt ]] && printf "%b✅ Verificação OK! (%s linhas)%b\n" "$GREEN_BOLD" "$(wc -l <${HOME}/XSS-Cheat-Sheet-PortSwigger.txt)" "$RESET" || printf "%b❌ %bFALHOU! Arquivo não encontrado%b\n" "$RED_BOLD" "$YELLOW_BOLD" "$RESET"
 
-# SecLists Opcional
+# ------------ SecLists Opcional -------------
 if [ ! -d "SecLists" ]; then
   printf "%bDeseja instalar SecLists? (s/N)%b\n" "$CYAN_LIGHT" "$RESET"
   read opcao
@@ -196,51 +193,18 @@ if [ ! -d "SecLists" ]; then
   esac
 fi
 
-# ------- Path para o venv -------
-PIPLIBS="${HOME}/piplibs"
-python3 -m venv "${PIPLIBS}"
-
-# ------ Path para atualizaçãode livrarias pip ------
-PYBIN="${PIPLIBS}/bin/python"
-PIPBIN="${PIPLIBS}/bin/pip"
-
-# Cria um alias permanente para ativar o venv rapidamente
-SHELLRC="${HOME}/.${SHELL##*/}rc"
-[ "$SHELL" = "/bin/bash" ] && SHELLRC="${HOME}/.bashrc"
-
-if ! grep -Fq "alias venv='source ${HOME}/piplibs/bin/activate'" "$SHELLRC"; then
-  printf "alias venv='source ${HOME}/piplibs/bin/activate'" >>"$SHELLRC"
-fi
-printf "%b[INFO]%b Use o comando 'venv' para ativar o ambiente Python.\n" "$CYAN_BOLD" "$RESET"
-printf "%b[INFO]%b Após ativar o venv você pode instalar ferramentas Python via pip\n" "$CYAN_BOLD" "$RESET"
-
-sleep 2
-# Ativa o env dentro do script para instalar
-source "${PIPLIBS}/bin/activate"
-
-# ativa pipefail
-set -o pipefail
-
-# Upgrade pip/setuptools/wheel dentro do venv
-"${PIPBIN}" install --upgrade pip setuptools wheel
-
-# Desativar pipefail
-set +o pipefail
-
-# ---------- Tentando instalar repositorios com pip (usando piplibs) ----------
+# ---------- Tentando instalar repositorios com Pipx ----------
 for repo in "${!links[@]}"; do
-  REPO_PATH="./${repo}"
+  REPO_PATH="${HOME}/${repo}"
+  cd "${REPO_PATH}"
   if [ -f "${REPO_PATH}/setup.py" ] || [ -f "${REPO_PATH}/pyproject.toml" ]; then
-    printf "%bTentando instalar %s com pip (no piplibs)%b\n" "$GREEN_BOLD" "${repo}" "$RESET"
-    "${PIPBIN}" install "${REPO_PATH}" || printf "%bFalha ao instalar %s com pip. Instale manualmente se necessário.%b\n" "$RED_BOLD" "${repo}" "$RESET"
-    if [ -f "${PIPLIBS}/bin/${repo}" ]; then
-      sudo ln -sf "${PIPLIBS}/bin/${repo}" /usr/local/bin/"${repo}"
-    fi
+    printf "%bTentando instalar %s com Pipx%b\n" "$GREEN_BOLD" "${repo}" "$RESET"
+    pipx install . || printf "%bFalha ao instalar %s com Pipx. Instale manualmente se necessário.%b\n" "$RED_BOLD" "${repo}" "$RESET"
   else
     printf "%bRepositório %s não é um pacote Python instalável. Instalação manual será necessária.%b\n" "$YELLOW_BOLD" "${repo}" "$RESET"
   fi
 done
-deactivate
+
 # ---------- Ambiente virtual do projeto codigos_para_aprendizado ----------
 path4env="${HOME}/codigos_para_aprendizado/python3"
 if [[ -d "${path4env}" ]]; then
