@@ -54,7 +54,6 @@ pkg=(
   wget
   iputils-ping
   openssh-client
-  micro
   neovim
   pipx
   zsh
@@ -85,28 +84,9 @@ git clone https://github.com/LazyVim/starter "${HOME}/.config/nvim"
 rm "${HOME}/.config/nvim/.git"
 
 nvim --headless -c 'autocmd User LazySync quitall' -c Lazy >/dev/null 2>&1 &
-sleep 8
+sleep 5
 
 printf "%b[✔] Neovim LazyVim PRO pronto!%b\n" "$GREEN_BOLD" "$RESET"
-
-printf "%bConfigurando Micro (Atom-Dark nativo)...%b\n" "$YELLOW_BOLD" "$RESET"
-
-mkdir -p "${HOME}/.config/micro"
-cat >"${HOME}/.config/micro/settings.json" <<'MICROEOF'
-{
-    "colorscheme": "atom-dark",
-    "tabsize": 2,
-    "tabstospaces": true,
-    "mouse": true,
-    "clipboard": "external",
-    "ruler": true
-}
-MICROEOF
-
-#-------------Aplica config via micro command-------------
-micro -config-dir "${HOME}/.config/micro" --plugin togglemacro +":set colorscheme atom-dark\n:quit\n" /dev/null >/dev/null 2>&1
-
-printf "%b[✔] Micro Atom-Dark ativo!%b\n" "$GREEN_BOLD" "$RESET"
 
 # ---------- Instalando ferramentas Go ----------
 declare -A ferramentas=(
