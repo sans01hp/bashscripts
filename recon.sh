@@ -14,6 +14,8 @@ BLUE="\u001B[94m"
 RESET="\u001B[0m"
 
 # ---------- Funções ----------
+data=$(date +%Y-%m-%d_%H:%M)
+
 menu() {
   printf "%b1-Recon completo (Subfinder + Httpx + Gau + Nmap)%b\n" "$GREEN" "$RESET"
   printf "%b2-Usar Nuclei %b[ROOT NECESSÁRIO]%b\n" "$PURPLE" "$RED" "$RESET"
@@ -33,9 +35,9 @@ recon_all() {
   domain="${url#*://}"
   domain="${domain%%/*}"
 
-  gau_output="${gau_dir}/${domain}.txt"
-  subfinder_output="${subfinder_dir}/${domain}.txt"
-  nmap_output="${nmap_dir}/${domain}.txt"
+  gau_output="${gau_dir}/${domain}._${data}txt"
+  subfinder_output="${subfinder_dir}/${domain}_${data}.txt"
+  nmap_output="${nmap_dir}/${domain}_${data}.txt"
 
   printf "%b[INFO]%b Rodando Subfinder...\n" "$GREEN" "$RESET"
   subfinder -d "$domain" -silent | tee "$subfinder_output"
@@ -89,7 +91,7 @@ usar_gobuster() {
 
   gobuster_url="${url#*://}"
   gobuster_dir="${HOME}/bashscripts/gobuster_results"
-  gobuster_out="${gobuster_dir}/${gobuster_url}_$(date +%Y-%m-%d_%H:%M).txt"
+  gobuster_out="${gobuster_dir}/${gobuster_url}_${data}.txt"
   local wordlist="${HOME}/common.txt"
   local user_wordlist=""
   local opcao=""
