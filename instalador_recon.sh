@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Definição das cores ANSI
+#-----------Definição das cores ANSI-----------
 YELLOW="\u001B[1;93m"
 GREEN_BOLD="\u001B[1;32m"
 CYAN_BOLD="\u001B[1;36m"
@@ -22,7 +22,7 @@ if [ "$(uname)" != "Linux" ]; then
   exit 1
 fi
 
-# Solicita senha sudo uma vez no começo
+# -----------Solicita senha sudo uma vez no começo----------
 printf "%bVerificando permissões de sudo...%b\n" "$CYAN_BOLD" "$RESET"
 sudo -v
 
@@ -103,7 +103,7 @@ cat >"${HOME}/.config/micro/settings.json" <<'MICROEOF'
 }
 MICROEOF
 
-# Aplica config via micro command (IMEDIATO)
+#-------------Aplica config via micro command-------------
 micro -config-dir "${HOME}/.config/micro" --plugin togglemacro +":set colorscheme atom-dark\n:quit\n" /dev/null >/dev/null 2>&1
 
 printf "%b[✔] Micro Atom-Dark ativo!%b\n" "$GREEN_BOLD" "$RESET"
