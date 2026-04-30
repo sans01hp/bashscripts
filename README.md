@@ -15,6 +15,4 @@ cd bashscripts
 chmod +x instalador_recon.sh
 ./instalador_recon.sh
 
-```
-Bom uso.
 
