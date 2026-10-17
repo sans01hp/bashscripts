@@ -64,11 +64,10 @@ while getopts "u:h" flag; do
     ;;
   u)
     url=$OPTARG
-    # Mantem a mesma normalizacao e validacao usada por resetar_url.
-    if [[ ! "${url}" =~ ^https?:// ]]; then
-      url="https://${url}"
-    fi
-     
+    case "$url" in
+      http://* | https://*) ;;
+      *) url="https://${url}" ;;
+    esac
     ;;
   ?)
     echo "Opção inválida. Use $0 -h para ajuda."

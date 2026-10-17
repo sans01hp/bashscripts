@@ -2,17 +2,14 @@
 
 resetar_url() {
   printf "%bDigite o %bDominio/Url %bque deseja analisar:%b\n" "$YELLOW" "$CYAN_LIGHT" "$YELLOW" "$RESET"
-  read -r url
+  local nova_url
+  read -r nova_url
 
-  if [[ -z "${url}" ]]; then
-    printf "%b[ERRO]%b URL vazia.%b\n" "$RED" "$YELLOW" "$RESET"
+  if [[ "$nova_url" != http://* && "$nova_url" != https://* ]]; then
+    printf "%b[ERRO]%b Informe uma URL iniciada por http:// ou https://.%b\n" "$RED" "$YELLOW" "$RESET"
     return 1
   fi
 
-  # Normaliza entradas sem protocolo para que todas as funcoes recebam uma
-  # URL completa.
- if [[ ! "${url}" =~ ^https?:// ]]; then
-      url="https://${url}"
- fi
-
+  # shellcheck disable=SC2034
+  url="$nova_url"
 }
